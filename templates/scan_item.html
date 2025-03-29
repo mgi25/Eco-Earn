@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Item | Eco-Earn</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="nav-logo">Eco-Earn</div>
+      <ul class="nav-links">
+          <li><a href="{{ url_for('home') }}">Home</a></li>
+          <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+    <div class="dashboard">
+        <h1>Scan & Upload Item</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="input-group">
+                <label for="item_image">Choose an item image:</label>
+                <input type="file" name="item_image" id="item_image" required>
+            </div>
+            <button type="submit" class="signup-btn">Upload & Scan</button>
+        </form>
+    </div>
+</body>
+</html>

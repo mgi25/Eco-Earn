@@ -2,30 +2,102 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Eco-Earn</title>
-  <!-- Link to the same CSS used by login/signup for a consistent style -->
+  <title>Eco-Earn | Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-logo">Eco-Earn</div>
     <ul class="nav-links">
-      <!-- 'home' route -> the default '/' in app.py -->
       <li><a href="{{ url_for('home') }}">Home</a></li>
-      <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
-      <li><a href="{{ url_for('login') }}">Login</a></li>
+      <!-- Update 'profile' route as needed -->
+      <li><a href="#">Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
 
-  <!-- HERO SECTION -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Welcome to Eco-Earn</h1>
-      <p>Earn rewards while helping the planet!</p>
-      <!-- "Get Started" button linking to the signup page -->
-      <a class="cta-button" href="{{ url_for('signup') }}">Get Started</a>
+  <!-- DASHBOARD CONTENT -->
+  <div class="dashboard">
+    <!-- Greeting -->
+    <h1>Welcome, {{ user.name if user else 'User' }}!</h1>
+    
+    <!-- Rewards Summary (Placeholder) -->
+    <div class="summary">
+      <p>Your current rewards: <strong>(coming soon!)</strong></p>
     </div>
-  </section>
+
+    <!-- Profile Summary Card -->
+    <div class="profile-summary">
+      <!-- Replace default_avatar.png with a real image in static/images/ if desired -->
+      <img src="{{ url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile Picture">
+      <h2>{{ user.name if user else 'User' }}</h2>
+      <p>{{ user.email if user else 'email@example.com' }}</p>
+      <a href="#">Edit Profile</a>
+    </div>
+
+    <!-- Stats Section -->
+    <section class="stats-container">
+      <h2>Your Recycling Stats</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <h3>Total Items Recycled</h3>
+          <p>42</p>
+        </div>
+        <div class="stat-box">
+          <h3>Total Rewards Earned</h3>
+          <p>$5.20</p>
+        </div>
+        <div class="stat-box">
+          <h3>Environmental Impact</h3>
+          <p>You saved 3 trees!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards Container (Main Actions) -->
+    <div class="cards-container">
+      <!-- Card 1: Scan Item -->
+      <div class="card">
+        <h2>Scan Item</h2>
+        <p>Upload and scan a recyclable item using our AI-powered tool.</p>
+        <a href="#">Scan Now</a>
+      </div>
+      <!-- Card 2: Recycling Center Locator -->
+      <div class="card">
+        <h2>Find Recycling Center</h2>
+        <p>Locate the nearest recycling center near you.</p>
+        <a href="#">Locate Center</a>
+      </div>
+      <!-- Card 3: Transaction History -->
+      <div class="card">
+        <h2>Transaction History</h2>
+        <p>Review your past recycling transactions and rewards.</p>
+        <a href="#">View History</a>
+      </div>
+      <!-- Card 4: My Items -->
+      <div class="card">
+        <h2>My Items</h2>
+        <p>View all the items you’ve scanned or uploaded.</p>
+        <a href="#">View Items</a>
+      </div>
+      <!-- Card 5: Redeem Rewards -->
+      <div class="card">
+        <h2>Redeem Rewards</h2>
+        <p>Convert your points into gift cards or cash.</p>
+        <a href="#">Redeem Now</a>
+      </div>
+    </div>
+
+    <!-- Announcements / Eco Tips -->
+    <section class="announcements">
+      <h2>Eco Tips & Announcements</h2>
+      <ul>
+        <li><strong>Tip 1:</strong> Rinse out plastic containers before recycling.</li>
+        <li><strong>Tip 2:</strong> Compost your food scraps to reduce waste.</li>
+        <li><strong>Announcement:</strong> New recycling center opened downtown!</li>
+      </ul>
+    </section>
+  </div>
 </body>
 </html>
