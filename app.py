@@ -10,8 +10,8 @@ app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # required for flash messages and sessions
 
 @app.route('/')
-def index():
-    return "<h1>Welcome to Eco-Earn</h1>"
+def home():
+    return render_template('home.html')
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():

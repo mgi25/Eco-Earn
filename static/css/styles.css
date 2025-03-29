@@ -1,6 +1,6 @@
 /* styles.css */
 
-/* Reset and box-sizing */
+/* ================= RESET & GLOBAL STYLES ================= */
 * {
     margin: 0;
     padding: 0;
@@ -10,14 +10,95 @@
   html, body {
     height: 100%;
     font-family: 'Segoe UI', sans-serif;
+    color: #333;
   }
   
+  /* ================= NAVIGATION BAR ================= */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d4b1f;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links li {
+    display: inline-block;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #2d4b1f;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .nav-links a:hover {
+    color: #1a2e12;
+  }
+  
+  /* ================= HERO SECTION (HOME PAGE) ================= */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 74px); /* full viewport height minus navbar height */
+    background: url("../images/registration_page_image.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  
+  .hero-content {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8); /* translucent overlay for readability */
+    padding: 40px 60px;
+    border-radius: 10px;
+  }
+  
+  .hero-content h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #2d4b1f;
+  }
+  
+  .hero-content p {
+    font-size: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .cta-button {
+    display: inline-block;
+    padding: 14px 40px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #2d4b1f;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #1f3414;
+  }
+  
+  /* ================= SPLIT-SCREEN LAYOUT (SIGNUP/LOGIN) ================= */
   .main-container {
     display: flex;
     height: 100vh;
   }
   
-  /* LEFT SECTION (FORM) */
   .left-section {
     flex: 1;
     padding: 60px;
@@ -60,6 +141,7 @@
     margin-right: 10px;
   }
   
+  /* Reusing this button style for both Signup & Login */
   .signup-btn {
     background-color: #2d4b1f;
     color: white;
@@ -83,15 +165,35 @@
     text-decoration: none;
   }
   
-  /* RIGHT SECTION (IMAGE) */
+  /* The right section for the signup/login background */
   .right-section {
     flex: 1;
     background: url("../images/registration_page_image.jpg") no-repeat center center;
     background-size: cover;
   }
   
-  /* RESPONSIVE ADJUSTMENTS */
+  /* ================= MEDIA QUERIES (RESPONSIVE) ================= */
   @media (max-width: 768px) {
+    /* Navbar adjustments */
+    .navbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .nav-links {
+      margin-top: 10px;
+    }
+  
+    /* Hero section adjustments */
+    .hero {
+      height: auto;
+      padding: 40px 0;
+    }
+    .hero-content {
+      width: 90%;
+      margin: 0 auto;
+    }
+  
+    /* Signup/Login layout adjustments */
     .main-container {
       flex-direction: column;
     }
