@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <!-- Link to the same external CSS file -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -11,25 +10,37 @@
     <!-- LEFT: FORM -->
     <div class="left-section">
       <h2>Welcome Back</h2>
-
-      <div class="input-group">
-        <label for="email">Email address</label>
-        <input type="email" id="email" placeholder="Enter your email">
-      </div>
-
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter your password">
-      </div>
-
-      <button class="signup-btn">Login</button>
-
+      <!-- Display flash messages -->
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      {% endwith %}
+      
+      <form action="{{ url_for('login') }}" method="POST">
+        <div class="input-group">
+          <label for="email">Email address</label>
+          <input type="email" name="email" id="email" placeholder="Enter your email" required>
+        </div>
+  
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" placeholder="Enter your password" required>
+        </div>
+  
+        <button type="submit" class="signup-btn">Login</button>
+      </form>
+  
       <div class="signin-link">
         Don’t have an account? <a href="{{ url_for('signup') }}">Sign Up</a>
       </div>
     </div>
-
-    <!-- RIGHT: IMAGE (same background as signup) -->
+  
+    <!-- RIGHT: IMAGE -->
     <div class="right-section"></div>
   </div>
 </body>
