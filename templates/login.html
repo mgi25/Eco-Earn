@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <!-- Link to the same external CSS file -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="main-container">
+    <!-- LEFT: FORM -->
+    <div class="left-section">
+      <h2>Welcome Back</h2>
+
+      <div class="input-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="Enter your email">
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password">
+      </div>
+
+      <button class="signup-btn">Login</button>
+
+      <div class="signin-link">
+        Don’t have an account? <a href="{{ url_for('signup') }}">Sign Up</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: IMAGE (same background as signup) -->
+    <div class="right-section"></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+/* styles.css */
+
+/* Reset + box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .main-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* LEFT SECTION (FORM) */
+  .left-section {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fff;
+  }
+  
+  .left-section h2 {
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .checkbox-group input {
+    margin-right: 10px;
+  }
+  
+  .signup-btn {
+    background-color: #2d4b1f;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .signin-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .signin-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  /* RIGHT SECTION (IMAGE) */
+  .right-section {
+    flex: 1;
+    background: url("../images/registration_page_image.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  
+  /* RESPONSIVE ADJUSTMENTS */
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+    .right-section {
+      height: 300px;
+    }
+  }
+  /* Login Page Styles addition */
+  /* styles.css (no changes needed) */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .main-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .left-section {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #fff;
+  }
+  
+  .left-section h2 {
+    margin-bottom: 30px;
+    font-size: 28px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .signup-btn {
+    background-color: #2d4b1f;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .signin-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .signin-link a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .right-section {
+    flex: 1;
+    background: url("../images/registration_page_image.jpg") no-repeat center center;
+    background-size: cover;
+  }
+  
+  @media (max-width: 768px) {
+    .main-container {
+      flex-direction: column;
+    }
+    .right-section {
+      height: 300px;
+    }
+  }
+  
