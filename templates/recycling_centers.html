@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recycling Centers | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    #map {
+      width: 100%;
+      height: 500px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <h1 class="page-heading">Recycling Center Locator</h1>
+    <div id="map"></div>
+  </div>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    // centers data passed from Flask
+    const centers = {{ centers|tojson }};
+    
+    // Initialize the map, default center, and zoom level
+    var map = L.map('map').setView([20, 0], 2);
+    
+    // Set up the tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // If we have recycling centers, place markers and fit map bounds
+    if (centers.length > 0) {
+      var bounds = [];
+      centers.forEach(center => {
+        // Expecting center.location.coordinates as [longitude, latitude]
+        let lon = center.location.coordinates[0];
+        let lat = center.location.coordinates[1];
+        let marker = L.marker([lat, lon]).addTo(map);
+        let popupText = "<strong>" + center.name + "</strong>";
+        if (center.address) {
+          popupText += "<br>" + center.address;
+        }
+        marker.bindPopup(popupText);
+        bounds.push([lat, lon]);
+      });
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+  </script>
+</body>
+</html>

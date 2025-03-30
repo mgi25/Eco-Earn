@@ -1,28 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Scan Item | Eco-Earn</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta charset="UTF-8">
+  <title>Scan & Upload Item | Eco-Earn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <!-- NAVBAR -->
-    <nav class="navbar">
-      <div class="nav-logo">Eco-Earn</div>
-      <ul class="nav-links">
-          <li><a href="{{ url_for('home') }}">Home</a></li>
-          <li><a href="{{ url_for('logout') }}">Logout</a></li>
-      </ul>
-    </nav>
-    <div class="dashboard">
-        <h1>Scan & Upload Item</h1>
-        <form method="POST" enctype="multipart/form-data">
-            <div class="input-group">
-                <label for="item_image">Choose an item image:</label>
-                <input type="file" name="item_image" id="item_image" required>
-            </div>
-            <button type="submit" class="signup-btn">Upload & Scan</button>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">Eco-Earn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-heading">Scan & Upload Item</h1>
+
+    <!-- Flask flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <div class="flex-wrapper">
+      <!-- LEFT: CAMERA -->
+      <div class="camera-section card">
+        <h2 class="card-title">Camera</h2>
+        <video id="cameraPreview" autoplay playsinline></video>
+        <div class="camera-controls">
+          <button class="btn" id="selectCameraBtn">Open Camera</button>
+          <button class="btn" id="takePictureBtn">Capture Photo</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: THUMBNAILS + FILE INPUT + UPLOAD -->
+      <div class="upload-section card">
+        <h2 class="card-title">Images to Upload</h2>
+        
+        <!-- Thumbnails appear here for BOTH camera & file images -->
+        <div id="thumbnailsContainer" class="thumbnails-container"></div>
+
+        <!-- Single form to upload all images -->
+        <form id="uploadForm" method="POST">
+          <!-- Hidden input for the JSON array of base64 images -->
+          <input type="hidden" name="photosBase64" id="photosBase64">
+          
+          <!-- Add Files button -->
+          <div class="input-group">
+            <label>Add Files (from your device):</label>
+            <input type="file" id="fileInput" accept="image/*" multiple />
+          </div>
+
+          <!-- Single button to upload everything -->
+          <button type="submit" class="btn btn-upload">Upload All</button>
         </form>
+      </div>
     </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
 </body>
 </html>
