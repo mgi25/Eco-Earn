@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Items | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+      <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('admin_items') }}">Items</a></li>
+      <li><a href="{{ url_for('admin_transactions') }}">Transactions</a></li>
+      <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <h1 class="page-heading">Manage Items</h1>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Item ID</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Predicted Value</th>
+          <th>Upload Date</th>
+          <th>Photo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ item._id }}</td>
+          <td>{{ item.type }}</td>
+          <td>{{ item.status }}</td>
+          <td>{{ item.predictedValue }}</td>
+          <td>{{ item.uploadDate }}</td>
+          <td>
+            {% if item.photoUrl %}
+              <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Photo" width="80">
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

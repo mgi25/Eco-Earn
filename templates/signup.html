@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Signup</title>
+  <title>Signup | Eco-Earn</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
   <div class="main-container">
-    <!-- LEFT: FORM -->
     <div class="left-section">
       <h2>Get Started Now</h2>
-      <!-- Display flash messages -->
       {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul>
@@ -20,37 +18,29 @@
         </ul>
       {% endif %}
       {% endwith %}
-      
       <form action="{{ url_for('signup') }}" method="POST">
         <div class="input-group">
           <label for="name">Name</label>
-          <input type="text" name="name" id="name" placeholder="Enter your name" required>
+          <input type="text" name="name" id="name" required>
         </div>
-  
         <div class="input-group">
           <label for="email">Email address</label>
-          <input type="email" name="email" id="email" placeholder="Enter your email" required>
+          <input type="email" name="email" id="email" required>
         </div>
-  
         <div class="input-group">
           <label for="password">Password</label>
-          <input type="password" name="password" id="password" placeholder="Enter your password" required>
+          <input type="password" name="password" id="password" required>
         </div>
-  
         <div class="checkbox-group">
-          <input type="checkbox" name="terms" id="terms" value="accepted" required>
+          <input type="checkbox" name="terms" id="terms" required>
           <label for="terms">I agree to the terms & policy</label>
         </div>
-  
         <button type="submit" class="signup-btn">Signup</button>
       </form>
-  
       <div class="signin-link">
         Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
       </div>
     </div>
-  
-    <!-- RIGHT: IMAGE -->
     <div class="right-section"></div>
   </div>
 </body>

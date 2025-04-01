@@ -6,18 +6,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-  <style>
-    #map {
-      width: 100%;
-      height: 500px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-  </style>
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <div class="nav-logo">EcoEarn</div>
     <ul class="nav-links">
@@ -28,41 +18,33 @@
   
   <div class="container">
     <h1 class="page-heading">Recycling Center Locator</h1>
+    
+    <!-- Button to get user location and sort centers -->
+    <button class="btn" id="getLocationBtn">Show My Location & Sort</button>
+    
+    <!-- Map -->
     <div id="map"></div>
+    
+    <!-- List of Centers -->
+    <div id="centersList">
+      {% for center in centers %}
+      <div class="center-card center-item" data-name="{{ center.name }}" data-items="{{ center.acceptedItems | join(' ') }}">
+        <h2>{{ center.name }}</h2>
+        <p>{{ center.address if center.address else 'No address provided' }}</p>
+        {% if center.acceptedItems %}
+          <p><strong>Accepted Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
+        {% endif %}
+        {% if center.image %}
+          <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="150">
+        {% endif %}
+        <br>
+        <a href="{{ url_for('center_map', center_id=center['_id']) }}" class="btn" style="margin-top:10px;">View on Map</a>
+      </div>
+      {% endfor %}
+    </div>
   </div>
   
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <script>
-    // centers data passed from Flask
-    const centers = {{ centers|tojson }};
-    
-    // Initialize the map, default center, and zoom level
-    var map = L.map('map').setView([20, 0], 2);
-    
-    // Set up the tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    
-    // If we have recycling centers, place markers and fit map bounds
-    if (centers.length > 0) {
-      var bounds = [];
-      centers.forEach(center => {
-        // Expecting center.location.coordinates as [longitude, latitude]
-        let lon = center.location.coordinates[0];
-        let lat = center.location.coordinates[1];
-        let marker = L.marker([lat, lon]).addTo(map);
-        let popupText = "<strong>" + center.name + "</strong>";
-        if (center.address) {
-          popupText += "<br>" + center.address;
-        }
-        marker.bindPopup(popupText);
-        bounds.push([lat, lon]);
-      });
-      map.fitBounds(bounds, { padding: [20, 20] });
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 </html>

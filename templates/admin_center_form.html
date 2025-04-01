@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - {{ action }} Center | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('admin_items') }}">Items</a></li>
+      <li><a href="{{ url_for('admin_transactions') }}">Transactions</a></li>
+      <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container form-container">
+    <h1 class="page-heading">{{ action }} Recycling Center</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Center Name:</label>
+        <input type="text" name="name" id="name" placeholder="e.g., Downtown Recycling Hub"
+               value="{{ center.name if center.name else '' }}" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea name="address" id="address" rows="3" placeholder="Enter the center address">{{ center.address if center.address else '' }}</textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="accepted_items">Accepted Items (comma-separated):</label>
+        <input type="text" name="accepted_items" id="accepted_items" placeholder="e.g., Plastic, Glass, Metal"
+               value="{{ center.accepted_items_str if center.accepted_items_str else '' }}">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="latitude">Latitude:</label>
+          <input type="text" name="latitude" id="latitude" placeholder="e.g., 40.7128"
+                 value="{{ center.latitude if center.latitude else '' }}" required>
+        </div>
+        <div class="form-group half-width">
+          <label for="longitude">Longitude:</label>
+          <input type="text" name="longitude" id="longitude" placeholder="e.g., -74.0060"
+                 value="{{ center.longitude if center.longitude else '' }}" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="center_image">Center Image (optional):</label>
+        <input type="file" name="center_image" id="center_image" accept="image/*">
+        {% if center.image %}
+          <p>Current image:<br>
+            <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="150">
+          </p>
+        {% endif %}
+      </div>
+      
+      <button type="submit" class="btn">{{ action }} Center</button>
+    </form>
+  </div>
+</body>
+</html>

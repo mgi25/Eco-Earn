@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nearby Centers | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <h1 class="page-heading">Centers Near You</h1>
+    {% for center in centers %}
+      <div class="center-card">
+        <h2>{{ center.name }}</h2>
+        <p>{{ center.address }}</p>
+        {% if center.acceptedItems %}
+          <p><strong>Accepted Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
+        {% endif %}
+        {% if center.image %}
+          <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="150">
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

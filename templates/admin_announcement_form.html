@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - {{ action }} Announcement | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  <div class="container form-container">
+    <h1 class="page-heading">{{ action }} Announcement</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="title" placeholder="Enter announcement title"
+               value="{{ announcement.title if announcement.title else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea name="content" id="content" rows="5" placeholder="Enter announcement content" required>{{ announcement.content if announcement.content else '' }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="announcement_image">Announcement Image (optional):</label>
+        <input type="file" name="announcement_image" id="announcement_image" accept="image/*">
+        {% if announcement.image %}
+          <p>Current image:<br>
+            <img src="{{ url_for('static', filename=announcement.image) }}" alt="Announcement Image" width="150">
+          </p>
+        {% endif %}
+      </div>
+      <button type="submit" class="btn">{{ action }} Announcement</button>
+    </form>
+  </div>
+</body>
+</html>

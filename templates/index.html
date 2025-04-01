@@ -3,27 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Eco-Earn</title>
-  <!-- Link to the same CSS used by login/signup for a consistent style -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <div class="nav-logo">Eco-Earn</div>
     <ul class="nav-links">
-      <!-- 'home' route -> the default '/' in app.py -->
       <li><a href="{{ url_for('home') }}">Home</a></li>
       <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
       <li><a href="{{ url_for('login') }}">Login</a></li>
     </ul>
   </nav>
-
-  <!-- HERO SECTION -->
   <section class="hero">
     <div class="hero-content">
       <h1>Welcome to Eco-Earn</h1>
       <p>Earn rewards while helping the planet!</p>
-      <!-- "Get Started" button linking to the signup page -->
       <a class="cta-button" href="{{ url_for('signup') }}">Get Started</a>
     </div>
   </section>

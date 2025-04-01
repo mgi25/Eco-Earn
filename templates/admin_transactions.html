@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Transactions | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+      <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('admin_items') }}">Items</a></li>
+      <li><a href="{{ url_for('admin_transactions') }}">Transactions</a></li>
+      <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <h1 class="page-heading">Manage Transactions</h1>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Transaction ID</th>
+          <th>User ID</th>
+          <th>Center ID</th>
+          <th>Total Earnings</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trans in transactions %}
+        <tr>
+          <td>{{ trans._id }}</td>
+          <td>{{ trans.userId }}</td>
+          <td>{{ trans.centerId }}</td>
+          <td>{{ trans.totalEarnings }}</td>
+          <td>{{ trans.transactionDate }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

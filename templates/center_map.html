@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ center.name }} | Map | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('recycling_centers') }}">Back to Centers</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  
+  <div class="container">
+    <h1 class="page-heading">View on Map</h1>
+    <div class="center-info">
+      <h2 id="centerName">{{ center.name }}</h2>
+      <p id="centerAddress">{{ center.address if center.address else 'No address provided' }}</p>
+      {% if center.acceptedItems %}
+        <p><strong>Accepted Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
+      {% endif %}
+      {% if center.image %}
+        <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="150">
+      {% endif %}
+    </div>
+    <!-- Hidden element containing coordinates (format: [lon, lat]) -->
+    <div id="centerCoordinates" style="display:none;">
+      {{ center.location.coordinates | tojson }}
+    </div>
+    <div id="map" class="map-container"></div>
+  </div>
+  
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="{{ url_for('static', filename='js/center_map.js') }}"></script>
+</body>
+</html>

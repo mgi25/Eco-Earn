@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Announcements | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+      <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('admin_items') }}">Items</a></li>
+      <li><a href="{{ url_for('admin_transactions') }}">Transactions</a></li>
+      <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+  <div class="container">
+    <h1 class="page-heading">Manage Announcements</h1>
+    <a href="{{ url_for('admin_add_announcement') }}" class="action-btn">Add Announcement</a>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Announcement ID</th>
+          <th>Title</th>
+          <th>Date</th>
+          <th>Content</th>
+          <th>Image</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ann in announcements %}
+        <tr>
+          <td>{{ ann._id }}</td>
+          <td>{{ ann.title }}</td>
+          <td>{{ ann.date }}</td>
+          <td>{{ ann.content }}</td>
+          <td>
+            {% if ann.image %}
+              <img src="{{ url_for('static', filename=ann.image) }}" alt="Announcement Image" width="100">
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('admin_edit_announcement', announcement_id=ann._id) }}" class="action-btn">Edit</a>
+            <form action="{{ url_for('admin_delete_announcement', announcement_id=ann._id) }}" method="POST" class="delete-form">
+              <button type="submit" class="action-btn delete-btn">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
