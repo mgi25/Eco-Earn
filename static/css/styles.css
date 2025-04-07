@@ -603,3 +603,174 @@ html, body {
   width: 100%;
   margin-top: 20px;
 }
+/* Redeem Rewards Page */
+.redeem-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.redeem-card {
+  background-color: #fff;
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.redeem-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #2d4b1f; /* Adjust to your brand color */
+}
+
+.redeem-balance {
+  font-size: 36px;
+  font-weight: 600;
+  color: #2d4b1f;
+  margin-bottom: 20px;
+}
+
+.redeem-text {
+  font-size: 16px;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.redeem-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.redeem-form input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.btn-redeem {
+  background-color: #2d4b1f;
+  color: #fff;
+  font-size: 16px;
+  padding: 12px 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-redeem:hover {
+  background-color: #1f3414;
+}
+
+/* Optional: Flash messages styling */
+.flash-messages p {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+/* Profile Page Styles */
+.profile-details {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.profile-details p {
+  font-size: 16px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.profile-details a.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #2d4b1f;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.profile-details a.btn:hover {
+  background-color: #1f3414;
+}
+
+/* Profile Edit Form Styles */
+form {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+form .form-group {
+  margin-bottom: 15px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
+
+form input[type="text"],
+form input[type="email"],
+form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+form button.btn {
+  background-color: #2d4b1f;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button.btn:hover {
+  background-color: #1f3414;
+}
+
+/* Flash Messages */
+.flash-messages p {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 10px 0;
+}

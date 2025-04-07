@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redeem Success | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container redeem-container">
+    <h1 class="page-heading">Redemption Successful!</h1>
+    <div class="redeem-card" style="text-align:center;">
+      <h2>Congratulations!</h2>
+      <p>Your redemption of <strong>{{ redeem_amount }}</strong> points is complete.</p>
+      <p>We’ve deducted that amount from your balance.</p>
+      <p>You can view this transaction in your <a href="{{ url_for('transaction_history') }}">Transaction History</a>.</p>
+      <a class="btn" href="{{ url_for('redeem_rewards') }}" style="margin-top:20px;">Redeem More</a>
+    </div>
+  </div>
+</body>
+</html>

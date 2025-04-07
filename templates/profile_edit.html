@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profile | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-heading">Edit Profile</h1>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- IMPORTANT: enctype="multipart/form-data" for file uploads -->
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" value="{{ user.name }}" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" value="{{ user.email }}" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone:</label>
+        <input type="text" name="phone" id="phone" value="{{ user.phone if user.phone else '' }}">
+      </div>
+      <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea name="address" id="address" rows="3" placeholder="Enter your address">{{ user.address if user.address else '' }}</textarea>
+      </div>
+      <!-- NEW: Profile Image Field -->
+      <div class="form-group">
+        <label for="profile_image">Profile Picture:</label>
+        <input type="file" name="profile_image" id="profile_image" accept="image/*">
+        {% if user.profilePicture %}
+          <p>Current Image:</p>
+          <img src="{{ url_for('static', filename=user.profilePicture) }}" alt="Profile Picture" width="120">
+        {% endif %}
+      </div>
+      <button type="submit" class="btn">Update Profile</button>
+    </form>
+  </div>
+</body>
+</html>

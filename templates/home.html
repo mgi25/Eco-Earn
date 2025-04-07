@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <title>EcoEarn | Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <!-- Optionally add a modern Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 </head>
 <body>
   <!-- NAVIGATION -->
@@ -11,13 +14,14 @@
     <div class="nav-logo">EcoEarn</div>
     <ul class="nav-links">
       <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('profile') }}">My Profile</a></li>
       <li><a href="{{ url_for('recycling_centers') }}">Recycling Centers</a></li>
       <li><a href="{{ url_for('scan_item') }}">Scan Item</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
 
-  <!-- HERO SECTION WITH BACKGROUND IMAGE (SCAN) -->
+  <!-- HERO SECTION WITH BACKGROUND IMAGE -->
   <section class="hero" style="background: url('{{ url_for('static', filename='images/registration_page_image.jpg') }}') no-repeat center center; background-size: cover;">
     <div class="hero-overlay">
       <div class="hero-content">
@@ -28,35 +32,52 @@
     </div>
   </section>
 
-  <!-- MAIN CONTENT AREA WITH ADMIN UPDATES -->
+  <!-- MAIN CONTENT AREA -->
   <section class="home-content">
     <div class="container">
-      <!-- Dashboard Row: Profile & Stats -->
+      <!-- Dashboard Row: Profile Summary & Recycling Stats -->
       <div class="dashboard-row">
         <!-- Profile Summary -->
+       <!-- Profile Summary -->
         <div class="profile-summary">
-          <img src="{{ url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile Picture">
+          <img
+            src="{% if user.profilePicture %}
+              {{ url_for('static', filename=user.profilePicture) }}
+            {% else %}
+              {{ url_for('static', filename='images/default_avatar.jpg') }}
+            {% endif %}"
+            alt="Profile Picture"
+          >
           <h2>Welcome, {{ user.name if user else 'User' }}!</h2>
           {% if user.email %}
             <p>{{ user.email }}</p>
           {% endif %}
-          <a href="#">Edit Profile</a>
+          <a href="{{ url_for('edit_profile') }}" class="btn">Edit Profile</a>
         </div>
+
         <!-- Recycling Stats -->
         <div class="stats-card">
           <h2>Your Recycling Stats</h2>
           <div class="stats-grid">
             <div class="stat-box">
               <h3>Total Items Recycled</h3>
-              <p>42</p>
+              <p>{{ user.items_recycled if user.items_recycled is defined else 0 }}</p>
             </div>
             <div class="stat-box">
               <h3>Total Rewards Earned</h3>
-              <p>$5.20</p>
+              <p>{{ user.rewards if user.rewards is defined else 0 }}</p>
             </div>
             <div class="stat-box">
               <h3>Environmental Impact</h3>
-              <p>You saved 3 trees!</p>
+              <p>
+                You saved 
+                {% if user.items_recycled is defined %}
+                  {{ (user.items_recycled * 0.1)|round(0) }}
+                {% else %}
+                  0
+                {% endif %}
+                trees!
+              </p>
             </div>
           </div>
         </div>
@@ -67,31 +88,31 @@
         <div class="card">
           <h2>Scan Item</h2>
           <p>Upload and scan a recyclable item to earn rewards.</p>
-          <a href="{{ url_for('scan_item') }}">Scan Now</a>
+          <a href="{{ url_for('scan_item') }}" class="btn">Scan Now</a>
         </div>
         <div class="card">
           <h2>Find Recycling Centers</h2>
           <p>Locate the nearest recycling center near you.</p>
-          <a href="{{ url_for('recycling_centers') }}">Locate Center</a>
-        </div>
-        <div class="card">
-          <h2>Transaction History</h2>
-          <p>Review your recycling transactions and rewards.</p>
-          <a href="#">View History</a>
+          <a href="{{ url_for('recycling_centers') }}" class="btn">Locate Center</a>
         </div>
         <div class="card">
           <h2>My Items</h2>
           <p>View all the items you’ve scanned or uploaded.</p>
-          <a href="#">View Items</a>
+          <a href="{{ url_for('my_items') }}" class="btn">View Items</a>
+        </div>
+        <div class="card">
+          <h2>Transaction History</h2>
+          <p>Review your recycling transactions and rewards.</p>
+          <a href="{{ url_for('transaction_history') }}" class="btn">View History</a>
         </div>
         <div class="card">
           <h2>Redeem Rewards</h2>
           <p>Convert your points into cash or gift cards.</p>
-          <a href="#">Redeem Now</a>
+          <a href="{{ url_for('redeem_rewards') }}" class="btn">Redeem Now</a>
         </div>
       </div>
 
-      <!-- Announcements / Eco Tips (Updated via Admin) -->
+      <!-- Announcements / Eco Tips Section -->
       <section class="announcements">
         <h2>Eco Tips & Announcements</h2>
         <ul>

@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import base64  # <-- IMPORTANT: import base64 to fix the undefined error
 from functools import wraps
 from flask import Flask, render_template, request, url_for, redirect, flash, session
 from pymongo import MongoClient
@@ -18,7 +19,7 @@ client = MongoClient(DB_URL)
 db = client['ecoearn']
 app.config['db'] = db
 
-# Ensure 2dsphere index exists on recyclingCenters collection
+# Ensure 2dsphere index for recyclingCenters
 if "location_2dsphere" not in db.recyclingCenters.index_information():
     db.recyclingCenters.create_index({"location": "2dsphere"})
 
@@ -81,6 +82,7 @@ def login():
             session['is_admin'] = True
             flash("Admin login successful!")
             return redirect(url_for('admin_dashboard'))
+
         user = db.users.find_one({"email": email})
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             session['user_id'] = str(user['_id'])
@@ -97,13 +99,16 @@ def home():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
+
     if session['user_id'] == 'admin':
         user = {"name": "Admin"}
     else:
         user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
     announcements = list(db.announcements.find())
     for ann in announcements:
         ann['_id'] = str(ann['_id'])
+
     return render_template('home.html', user=user, announcements=announcements)
 
 @app.route('/scan_item', methods=['GET', 'POST'])
@@ -111,18 +116,33 @@ def scan_item():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
+
     if request.method == 'POST':
+        # Single file upload
         if 'item_image' in request.files and request.files['item_image'].filename != '':
             file = request.files['item_image']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(save_path)
+                
+                # Insert a new item document into db.items
+                db.items.insert_one({
+                    "userId": session['user_id'],
+                    "type": "Unknown",  # or something from AI detection
+                    "status": "Pending",
+                    "predictedValue": 0,  # placeholder
+                    "photoUrl": f"uploads/{filename}",
+                    "uploadDate": time.strftime("%Y-%m-%d")
+                })
+
                 flash("File uploaded successfully! (Simulating scan...)")
                 return redirect(url_for('scan_item'))
             else:
                 flash("Invalid file type! Please upload an image file.")
                 return redirect(request.url)
+
+        # Multiple base64 images from camera
         photos_json = request.form.get('photosBase64')
         if photos_json:
             try:
@@ -135,14 +155,28 @@ def scan_item():
                     save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     with open(save_path, 'wb') as f:
                         f.write(img_data)
+
+                    # Insert each captured image as a new item
+                    db.items.insert_one({
+                        "userId": session['user_id'],
+                        "type": "Unknown",
+                        "status": "Pending",
+                        "predictedValue": 0,
+                        "photoUrl": f"uploads/{filename}",
+                        "uploadDate": time.strftime("%Y-%m-%d")
+                    })
+
                     count += 1
+
                 flash(f"{count} captured photo(s) uploaded successfully! (Simulating scan...)")
                 return redirect(request.url)
             except Exception as e:
                 flash(f"Error saving captured photos: {e}")
                 return redirect(request.url)
+
         flash("Please select a file or capture some photos.")
         return redirect(request.url)
+
     return render_template('scan_item.html')
 
 # -----------------------
@@ -164,13 +198,12 @@ def recycling_centers():
             lat_val = float(lat_str)
             lon_val = float(lon_str)
             if -90 <= lat_val <= 90 and -180 <= lon_val <= 180:
-                # Use $geoNear aggregation to get centers sorted by distance.
                 pipeline = [
                     {
                         "$geoNear": {
                             "near": {"type": "Point", "coordinates": [lon_val, lat_val]},
                             "distanceField": "distance",
-                            "maxDistance": 50000,  # 50 km
+                            "maxDistance": 50000,
                             "spherical": True
                         }
                     }
@@ -186,7 +219,6 @@ def recycling_centers():
         except Exception as e:
             flash(f"Error during geo query: {e}")
 
-    # Fallback: if no valid lat/lon provided or error occurs, show all centers unsorted.
     if not centers:
         centers = list(db.recyclingCenters.find())
         for center in centers:
@@ -222,6 +254,140 @@ def logout():
     session.clear()
     flash("Logged out successfully!")
     return redirect(url_for('login'))
+
+# -----------------------
+# MY ITEMS, TRANSACTION HISTORY, REDEEM REWARDS ROUTES
+# -----------------------
+@app.route('/my_items')
+def my_items():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+    user_items = db.items.find({"userId": user_id})
+    items_list = []
+    for item in user_items:
+        item['_id'] = str(item['_id'])
+        items_list.append(item)
+    return render_template('my_items.html', items=items_list)
+
+@app.route('/transaction_history')
+def transaction_history():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+    user_id = session['user_id']
+    user_transactions = db.transactions.find({"userId": user_id})
+    transactions_list = []
+    for tx in user_transactions:
+        tx['_id'] = str(tx['_id'])
+        transactions_list.append(tx)
+    return render_template('transaction_history.html', transactions=transactions_list)
+
+@app.route('/redeem_rewards', methods=['GET', 'POST'])
+def redeem_rewards():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
+    if request.method == 'POST':
+        redeem_amount = request.form.get('redeem_amount')
+        if redeem_amount:
+            try:
+                redeem_value = float(redeem_amount)
+                current_rewards = user.get('rewards', 0)
+
+                if redeem_value > current_rewards:
+                    flash("You do not have enough rewards to redeem that amount.")
+                else:
+                    # Store the redeem_value in session for the next step
+                    session['redeem_value'] = redeem_value
+                    # Go to redeem_details route
+                    return redirect(url_for('redeem_details'))
+
+            except ValueError:
+                flash("Please enter a valid number.")
+
+        return redirect(url_for('redeem_rewards'))
+
+    # GET request: just show the form
+    return render_template('redeem_rewards.html', user=user)
+
+@app.route('/redeem_details', methods=['GET', 'POST'])
+def redeem_details():
+    """Collect bank/payment info, finalize redemption."""
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
+    # Make sure we have a redeem_value stored
+    redeem_value = session.get('redeem_value')
+    if not redeem_value:
+        flash("Please enter an amount to redeem first.")
+        return redirect(url_for('redeem_rewards'))
+
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+    current_rewards = user.get('rewards', 0)
+
+    if request.method == 'POST':
+        # Get bank/payment fields
+        bank_name = request.form.get('bank_name')
+        account_number = request.form.get('account_number')
+        ifsc_code = request.form.get('ifsc_code')
+        # Or you could have a "payment_method" dropdown, etc.
+
+        # Validate the fields (simple example)
+        if not (bank_name and account_number and ifsc_code):
+            flash("Please fill all payment details.")
+            return redirect(url_for('redeem_details'))
+
+        # Double-check user still has enough points
+        if redeem_value > current_rewards:
+            flash("You no longer have enough rewards to redeem that amount.")
+            return redirect(url_for('redeem_rewards'))
+
+        # Deduct points from user
+        db.users.update_one(
+            {"_id": ObjectId(session['user_id'])},
+            {"$inc": {"rewards": -redeem_value}}
+        )
+
+        # Insert redemption transaction
+        tx_id = db.transactions.insert_one({
+            "userId": session['user_id'],
+            "transactionDate": time.strftime("%Y-%m-%d"),
+            "type": "redeem",
+            "redeemAmount": redeem_value,
+            "paymentInfo": {
+                "bankName": bank_name,
+                "accountNumber": account_number,
+                "ifscCode": ifsc_code
+            }
+        }).inserted_id
+
+        # Clear the session redeem_value
+        session.pop('redeem_value', None)
+
+        # Redirect to success page with the redeemed amount
+        return redirect(url_for('redeem_success', amount=redeem_value))
+
+    # GET request: show the payment form
+    return render_template('redeem_details.html', redeem_value=redeem_value)
+
+
+@app.route('/redeem_success')
+def redeem_success():
+    """Display a confirmation page after redeeming points."""
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
+    # Retrieve the redeemed amount from query string
+    redeem_amount = request.args.get('amount', 0)
+    return render_template('redeem_success.html', redeem_amount=redeem_amount)
+
 
 # -----------------------
 # ADMIN ROUTES (Protected)
@@ -282,9 +448,6 @@ def admin_transactions():
         trans['_id'] = str(trans['_id'])
     return render_template('admin_transactions.html', transactions=transactions)
 
-# -----------------------
-# ADMIN CRUD FOR RECYCLING CENTERS
-# -----------------------
 @app.route('/admin/centers/add', methods=['GET', 'POST'])
 @admin_required
 def admin_add_center():
@@ -295,8 +458,6 @@ def admin_add_center():
         accepted_items_list = [item.strip() for item in accepted_items.split(',')] if accepted_items else []
         lat = request.form.get('latitude')
         lon = request.form.get('longitude')
-        
-        # Handle center image upload
         image_file = request.files.get('center_image')
         image_url = None
         if image_file and allowed_file(image_file.filename):
@@ -304,7 +465,6 @@ def admin_add_center():
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image_file.save(save_path)
             image_url = "uploads/" + filename
-        
         center = {
             "name": name,
             "address": address,
@@ -331,8 +491,6 @@ def admin_edit_center(center_id):
         accepted_items_list = [item.strip() for item in accepted_items.split(',')] if accepted_items else []
         lat = request.form.get('latitude')
         lon = request.form.get('longitude')
-        
-        # Check if a new image was uploaded
         image_file = request.files.get('center_image')
         image_url = center.get("image")
         if image_file and allowed_file(image_file.filename):
@@ -340,7 +498,6 @@ def admin_edit_center(center_id):
             save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image_file.save(save_path)
             image_url = "uploads/" + filename
-        
         update_data = {
             "name": name,
             "address": address,
@@ -354,7 +511,6 @@ def admin_edit_center(center_id):
     
     center['accepted_items_str'] = ", ".join(center.get("acceptedItems", []))
     if center.get("location"):
-        # GeoJSON coordinates are [longitude, latitude]
         center['latitude'] = center['location']['coordinates'][1]
         center['longitude'] = center['location']['coordinates'][0]
     else:
@@ -373,9 +529,6 @@ def admin_delete_center(center_id):
         flash("Recycling center not found!")
     return redirect(url_for('admin_centers'))
 
-# -----------------------
-# ADMIN CRUD FOR ANNOUNCEMENTS
-# -----------------------
 @app.route('/admin/announcements')
 @admin_required
 def admin_announcements():
@@ -445,6 +598,71 @@ def admin_delete_announcement(announcement_id):
     else:
         flash("Announcement not found!")
     return redirect(url_for('admin_announcements'))
+from bson import ObjectId
+
+@app.route('/profile')
+def profile():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+    
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        flash("User not found. Please log in again.")
+        return redirect(url_for('login'))
+    
+    # (Optional) Count items to show real stats:
+    items_count = db.items.count_documents({"userId": session['user_id']})
+    user['items_recycled'] = items_count
+
+    return render_template('profile.html', user=user)
+
+
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def edit_profile():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+    
+    user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+    if not user:
+        flash("User not found. Please log in again.")
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+
+        update_data = {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "address": address
+        }
+
+        # Check if a new profile image was uploaded
+        if 'profile_image' in request.files and request.files['profile_image'].filename != '':
+            file = request.files['profile_image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(save_path)
+                # e.g. "uploads/filename.jpg"
+                update_data["profilePicture"] = f"uploads/{filename}"
+            else:
+                flash("Invalid file type for profile picture. Please upload a valid image.")
+                return redirect(url_for('edit_profile'))
+        
+        # Update user document in MongoDB
+        db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$set": update_data})
+        flash("Profile updated successfully!")
+        return redirect(url_for('profile'))
+    
+    # GET request: just show the edit form
+    return render_template('profile_edit.html', user=user)
+
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):

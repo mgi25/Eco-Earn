@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Items | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1 class="page-heading">My Items</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <p>Below is a list of all items you’ve scanned or uploaded:</p>
+
+    {% if items %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Item ID</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Predicted Value</th>
+            <th>Date</th>
+            <th>Photo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item._id }}</td>
+            <td>{{ item.type if item.type else 'Unknown' }}</td>
+            <td>{{ item.status if item.status else 'Pending' }}</td>
+            <td>{{ item.predictedValue if item.predictedValue else 'N/A' }}</td>
+            <td>{{ item.uploadDate if item.uploadDate else 'N/A' }}</td>
+            <td>
+              {% if item.photoUrl %}
+                <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Image" width="100">
+              {% else %}
+                No photo
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>You have not uploaded any items yet.</p>
+    {% endif %}
+  </div>
+</body>
+</html>
