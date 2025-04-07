@@ -12,9 +12,15 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # Replace with your secret key
+
+# Connect to MongoDB
 client = MongoClient(DB_URL)
 db = client['ecoearn']
 app.config['db'] = db
+
+# Ensure 2dsphere index exists on recyclingCenters collection
+if "location_2dsphere" not in db.recyclingCenters.index_information():
+    db.recyclingCenters.create_index({"location": "2dsphere"})
 
 # File upload configuration
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
@@ -140,45 +146,54 @@ def scan_item():
     return render_template('scan_item.html')
 
 # -----------------------
-# RECYCLING CENTERS
+# RECYCLING CENTERS ROUTE
 # -----------------------
 @app.route('/recycling_centers')
 def recycling_centers():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    if lat and lon:
+
+    lat_str = request.args.get('lat')
+    lon_str = request.args.get('lon')
+    centers = []
+    user_location = None
+
+    if lat_str and lon_str:
         try:
-            lat_val = float(lat)
-            lon_val = float(lon)
-            centers_cursor = db.recyclingCenters.find({
-                "location": {
-                    "$exists": True,
-                    "$ne": None,
-                    "$near": {
-                        "$geometry": {
-                            "type": "Point",
-                            "coordinates": [lon_val, lat_val]
-                        },
-                        "$maxDistance": 50000  # 50 km
+            lat_val = float(lat_str)
+            lon_val = float(lon_str)
+            if -90 <= lat_val <= 90 and -180 <= lon_val <= 180:
+                # Use $geoNear aggregation to get centers sorted by distance.
+                pipeline = [
+                    {
+                        "$geoNear": {
+                            "near": {"type": "Point", "coordinates": [lon_val, lat_val]},
+                            "distanceField": "distance",
+                            "maxDistance": 50000,  # 50 km
+                            "spherical": True
+                        }
                     }
-                }
-            })
-            centers = []
-            for c in centers_cursor:
-                c['_id'] = str(c['_id'])
-                centers.append(c)
-            user_location = {"lat": lat_val, "lon": lon_val}
-            return render_template('recycling_centers.html', centers=centers, user_location=user_location)
+                ]
+                centers = list(db.recyclingCenters.aggregate(pipeline))
+                for c in centers:
+                    c['_id'] = str(c['_id'])
+                user_location = {"lat": lat_val, "lon": lon_val}
+            else:
+                flash("Location out of range. Showing all centers unsorted.")
         except ValueError:
-            flash("Invalid location data.")
-            return redirect(url_for('recycling_centers'))
-    centers = list(db.recyclingCenters.find())
-    for center in centers:
-        center['_id'] = str(center['_id'])
-    return render_template('recycling_centers.html', centers=centers, user_location=None)
+            flash("Invalid location data. Showing all centers unsorted.")
+        except Exception as e:
+            flash(f"Error during geo query: {e}")
+
+    # Fallback: if no valid lat/lon provided or error occurs, show all centers unsorted.
+    if not centers:
+        centers = list(db.recyclingCenters.find())
+        for center in centers:
+            center['_id'] = str(center['_id'])
+        user_location = None
+
+    return render_template('recycling_centers.html', centers=centers, user_location=user_location)
 
 @app.route('/recycling_centers/<center_id>/map')
 def center_map(center_id):
@@ -339,6 +354,7 @@ def admin_edit_center(center_id):
     
     center['accepted_items_str'] = ", ".join(center.get("acceptedItems", []))
     if center.get("location"):
+        # GeoJSON coordinates are [longitude, latitude]
         center['latitude'] = center['location']['coordinates'][1]
         center['longitude'] = center['location']['coordinates'][0]
     else:
