@@ -114,6 +114,7 @@ def home():
         ann['_id'] = str(ann['_id'])
 
     return render_template('home.html', user=user, announcements=announcements)
+# AI prediction
 
 RECYCLABLE_KEYWORDS = [
     "plastic", "metal", "steel", "stainless", "aluminum", "can", "bottle",
