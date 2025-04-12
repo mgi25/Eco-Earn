@@ -115,11 +115,10 @@ def home():
 
     return render_template('home.html', user=user, announcements=announcements)
 # AI prediction
-
 RECYCLABLE_KEYWORDS = [
     "plastic", "metal", "steel", "stainless", "aluminum", "can", "bottle",
-    "glass", "tin", "container", "jar", "foil", "cup",
-    "recyclable", "carton", "paper", "cardboard"
+    "glass", "tin", "container", "jar", "foil", "cup", "recyclable",
+    "carton", "paper", "cardboard"
 ]
 
 def is_recyclable_item(text):
@@ -152,7 +151,6 @@ def extract_fields(prediction):
     estimated_value = value_match.group(1).strip() if value_match else "0"
     reason = reason_match.group(1).strip() if reason_match else ""
 
-    # ⬇️ Improve accuracy by overriding misleading type labels
     if "stainless steel" in reason.lower() and "plastic" in material_type.lower():
         material_type = "Stainless Steel"
     elif "aluminum" in material_type.lower() and "stainless steel" in reason.lower():
@@ -166,6 +164,10 @@ def extract_fields(prediction):
 
 @app.route('/scan_item', methods=['GET', 'POST'])
 def scan_item():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         uploaded_file = request.files.get('image')
         if not uploaded_file:
@@ -174,7 +176,7 @@ def scan_item():
 
         filename = secure_filename(uploaded_file.filename)
         unique_name = f"captured_{uuid.uuid4().hex[:10]}_{filename}"
-        save_path = os.path.join(UPLOAD_FOLDER, unique_name)
+        save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
         uploaded_file.save(save_path)
 
         try:
@@ -185,7 +187,14 @@ def scan_item():
                 "http://localhost:11434/api/generate",
                 json={
                     "model": "llava",
-                    "prompt": "You are an AI that analyzes images to determine whether an item is recyclable. Be very specific about material type. For example, say 'Stainless Steel' not just 'Metal'. Respond in a structured format:\nType: [material]\nEstimated Value: ₹[amount]\nReason: [why or why not it's recyclable]. Always be accurate. If it looks like a vehicle or unrelated object, respond with 'Type: Unknown' and mark as not recyclable.",
+                    "prompt": (
+                        "You are an AI that analyzes images to determine whether an item is recyclable. "
+                        "Be very specific about material type. For example, say 'Stainless Steel' not just 'Metal'. "
+                        "Respond in a structured format:\n"
+                        "Type: [material]\nEstimated Value: ₹[amount]\nReason: [why or why not it's recyclable]. "
+                        "Always be accurate. If it looks like a vehicle or unrelated object, respond with 'Type: Unknown' "
+                        "and mark as not recyclable."
+                    ),
                     "images": [image_data],
                     "stream": True
                 },
@@ -202,7 +211,9 @@ def scan_item():
             flash(f"AI prediction failed: {e}", "error")
             return redirect(url_for('scan_item'))
 
+        # Extract fields from prediction
         fields = extract_fields(prediction)
+        print("🔍 Extracted:", fields)  # Debug
 
         recyclable = (
             is_recyclable_item(fields['material_type']) and
@@ -211,6 +222,7 @@ def scan_item():
             not prediction_has_conflict(prediction)
         )
 
+        # Store in session for display
         session['last_prediction'] = prediction
         session['recyclable'] = recyclable
         session['material_type'] = fields['material_type']
@@ -221,11 +233,28 @@ def scan_item():
             os.remove(save_path)
             flash("⚠️ This doesn't appear to be a recyclable item. Try uploading a clear image of plastic, bottle, can, or similar.", "error")
         else:
-            flash("✅ Image uploaded and recognized as recyclable!", "success")
+            # Save to database
+            item_data = {
+                "userId": session['user_id'],
+                "image_path": "uploads/" + unique_name,
+                "material_type": fields['material_type'],
+                "estimated_value": fields['estimated_value'],
+                "reason": fields['reason'],
+                "status": "Pending Connection",
+                "timestamp": time.strftime("%Y-%m-%d")
+            }
+            inserted = db.items.insert_one(item_data)
+            item_id = str(inserted.inserted_id)
+
+            flash(
+                f"✅ Item is recyclable! <a href='/request_connection/{item_id}'>Click here to connect with the nearest recycling center</a>.",
+                "success"
+            )
 
         return redirect(url_for('scan_item'))
 
     return render_template('scan_item.html')
+
 
 
 # -----------------------
@@ -312,13 +341,24 @@ def my_items():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
+
     user_id = session['user_id']
     user_items = db.items.find({"userId": user_id})
     items_list = []
+
     for item in user_items:
-        item['_id'] = str(item['_id'])
-        items_list.append(item)
-    return render_template('my_items.html', items=items_list)
+        items_list.append({
+            "_id": str(item["_id"]),
+            "material_type": item.get("material_type", "Unknown"),
+            "status": item.get("status", "Pending"),
+            "estimated_value": item.get("estimated_value", "N/A"),
+            "timestamp": item.get("timestamp", "N/A"),
+            "image_path": item.get("image_path", None)
+        })
+
+    return render_template("my_items.html", items=items_list)
+
+
 
 @app.route('/transaction_history')
 def transaction_history():
@@ -748,6 +788,74 @@ Provide a helpful, polite, and informative answer in plain English.
         return {"reply": result.get("response", "Sorry, I couldn't answer that right now.")}
     except Exception as e:
         return {"reply": f"EcoBot Error: {e}"}
+
+#user connection
+@app.route('/request_connection/<item_id>')
+def request_connection(item_id):
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
+    # Get location from query string (sent via JS or button click)
+    lat_str = request.args.get('lat')
+    lon_str = request.args.get('lon')
+
+    if not (lat_str and lon_str):
+        flash("Location not provided. Please allow location access.", "error")
+        return redirect(url_for('my_items'))
+
+    try:
+        lat = float(lat_str)
+        lon = float(lon_str)
+    except ValueError:
+        flash("Invalid location data.", "error")
+        return redirect(url_for('my_items'))
+
+    # Get the item info
+    item = db.items.find_one({"_id": ObjectId(item_id)})
+    if not item:
+        flash("Item not found.", "error")
+        return redirect(url_for('my_items'))
+
+    material_type = item.get('material_type', '').lower()
+
+    # Find the nearest center that accepts the material type
+    pipeline = [
+        {
+            "$geoNear": {
+                "near": {"type": "Point", "coordinates": [lon, lat]},
+                "distanceField": "distance",
+                "spherical": True
+            }
+        },
+        {
+            "$match": {
+                "acceptedItems": {"$elemMatch": {"$regex": material_type, "$options": "i"}}
+            }
+        },
+        {"$sort": {"distance": 1}},
+        {"$limit": 1}
+    ]
+
+    center = list(db.recyclingCenters.aggregate(pipeline))
+    if not center:
+        flash("No recycling center nearby accepts this item.", "error")
+        return redirect(url_for('my_items'))
+
+    closest_center = center[0]
+    center_id = str(closest_center['_id'])
+
+    # Update item status
+    db.items.update_one(
+        {"_id": ObjectId(item_id)},
+        {"$set": {
+            "status": "Connection Requested",
+            "centerId": center_id
+        }}
+    )
+
+    flash(f"✅ Request sent to nearby center: {closest_center['name']}")
+    return redirect(url_for('my_items'))
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
