@@ -129,3 +129,20 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+function connectToNearest(itemId) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        window.location.href = `/request_connection/${itemId}?lat=${lat}&lon=${lon}`;
+      },
+      function (error) {
+        alert("⚠️ Failed to access location: " + error.message);
+      }
+    );
+  } else {
+    alert("Geolocation not supported by your browser.");
+  }
+}

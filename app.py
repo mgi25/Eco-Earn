@@ -246,10 +246,10 @@ def scan_item():
             inserted = db.items.insert_one(item_data)
             item_id = str(inserted.inserted_id)
 
-            flash(
-                f"✅ Item is recyclable! <a href='/request_connection/{item_id}'>Click here to connect with the nearest recycling center</a>.",
-                "success"
-            )
+            session['connect_item_id'] = item_id
+            flash("✅ Item is recyclable!")
+
+
 
         return redirect(url_for('scan_item'))
 
