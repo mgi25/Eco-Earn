@@ -1,0 +1,154 @@
+/* ==========================================================================
+   FULL-SCREEN BACKGROUND WITH FROSTED-GLASS CARD
+============================================================================= */
+
+/* The full background container */
+.auth-background {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    /* Update the URL to your eco-themed background image, e.g., "../images/forest.jpg" */
+    background: url("../images/forest.jpg") center center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Segoe UI", sans-serif;
+  }
+  
+  /* A dark overlay for enhanced readability */
+  .auth-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+  
+  /* The centered frosted-glass card */
+  .auth-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 30px;
+    text-align: center;
+  }
+  
+  /* Headings */
+  .auth-card h2 {
+    font-size: 26px;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #eaeaea;
+    margin-bottom: 24px;
+  }
+  
+  /* Flash messages */
+  .flash-messages p {
+    background-color: #f2dede;
+    color: #a94442;
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  
+  /* Input fields */
+  .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #fff;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    outline: none;
+    transition: border 0.2s ease, background-color 0.2s ease;
+  }
+  .input-group input::placeholder {
+    color: #ddd;
+  }
+  .input-group input:focus {
+    border-color: #2d4b1f;
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+  
+  /* Checkbox group */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  .checkbox-group input {
+    margin-right: 8px;
+  }
+  
+  /* Auth button */
+  .auth-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2d4b1f;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  .auth-btn:hover {
+    background-color: #1f3414;
+  }
+  
+  /* Bottom text links */
+  .bottom-text {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #fff;
+  }
+  .bottom-text a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  .bottom-text a:hover {
+    text-decoration: none;
+  }
+  
+  /* ==========================================================================
+     RESPONSIVE ADJUSTMENTS
+  ============================================================================= */
+  @media (max-width: 768px) {
+    .auth-card {
+      margin: 0 20px;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+    .auth-background {
+      background-position: center center;
+    }
+  }
+  

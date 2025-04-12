@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Redeem Rewards | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <!-- Optionally add a Google Font for a modern look -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/redeem_rewards.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- NAVIGATION BAR -->
   <nav class="navbar">
     <div class="nav-logo">EcoEarn</div>
     <ul class="nav-links">
@@ -18,10 +16,9 @@
     </ul>
   </nav>
 
-  <div class="container redeem-container">
+  <main class="container redeem-container">
     <h1 class="page-heading">Redeem Rewards</h1>
 
-    <!-- Display any flashed messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <div class="flash-messages">
@@ -33,14 +30,13 @@
     {% endwith %}
 
     {% if user %}
-      <!-- Card Layout -->
       <div class="redeem-card">
         <h2 class="redeem-title">Your Current Balance</h2>
         <p class="redeem-balance">
           <span>{{ user.rewards }}</span> points
         </p>
         <p class="redeem-text">
-          Enter the amount you want to redeem below. Rewards can be converted into cash, gift cards, or other benefits (depending on your integration).
+          Enter the amount you want to redeem below. Rewards can be converted into cash, gift cards, or other benefits.
         </p>
         <form method="POST" class="redeem-form">
           <div class="form-group">
@@ -51,8 +47,8 @@
         </form>
       </div>
     {% else %}
-      <p>Unable to load user information. Please log in again.</p>
+      <p class="error-message">Unable to load user information. Please log in again.</p>
     {% endif %}
-  </div>
+  </main>
 </body>
 </html>

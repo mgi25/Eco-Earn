@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Transactions | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_transactions.css') }}">
 </head>
 <body>
   <nav class="navbar admin-navbar">
@@ -18,31 +18,36 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
-  
+
   <div class="container">
-    <h1 class="page-heading">Manage Transactions</h1>
-    <table class="admin-table">
-      <thead>
-        <tr>
-          <th>Transaction ID</th>
-          <th>User ID</th>
-          <th>Center ID</th>
-          <th>Total Earnings</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for trans in transactions %}
-        <tr>
-          <td>{{ trans._id }}</td>
-          <td>{{ trans.userId }}</td>
-          <td>{{ trans.centerId }}</td>
-          <td>{{ trans.totalEarnings }}</td>
-          <td>{{ trans.transactionDate }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <h1 class="page-heading">All Transactions</h1>
+
+    {% if transactions %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>User ID</th>
+            <th>Center ID</th>
+            <th>Total Earnings</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for trans in transactions %}
+          <tr>
+            <td>{{ trans._id }}</td>
+            <td>{{ trans.userId }}</td>
+            <td>{{ trans.centerId if trans.centerId else 'N/A' }}</td>
+            <td>{{ trans.totalEarnings if trans.totalEarnings else 'N/A' }}</td>
+            <td>{{ trans.transactionDate }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No transactions found.</p>
+    {% endif %}
   </div>
 </body>
 </html>

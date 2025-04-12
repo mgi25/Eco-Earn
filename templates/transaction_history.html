@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Transaction History | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/transaction_history.css') }}">
 </head>
 <body>
   <nav class="navbar">
@@ -14,54 +14,57 @@
     </ul>
   </nav>
 
-  <div class="container">
+  <main class="container">
     <h1 class="page-heading">Transaction History</h1>
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
+        <div class="flash-messages">
           {% for message in messages %}
-            <li>{{ message }}</li>
+            <p>{{ message }}</p>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
-    <p>Below is your recycling transaction history:</p>
+    <p class="description">Below is your recycling transaction history:</p>
 
     {% if transactions %}
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Transaction ID</th>
-            <th>Date</th>
-            <th>Total Earnings</th>
-            <th>Items</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for tx in transactions %}
-          <tr>
-            <td>{{ tx._id }}</td>
-            <td>{{ tx.transactionDate if tx.transactionDate else 'N/A' }}</td>
-            <td>{{ tx.totalEarnings if tx.totalEarnings else 'N/A' }}</td>
-            <td>
-              {% if tx.items %}
-                <ul>
-                  {% for item in tx.items %}
-                    <li>{{ item.type }} - Earned: {{ item.earnings }}</li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                No items
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table class="transaction-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Total Earnings</th>
+              <th>Items</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for tx in transactions %}
+            <tr>
+              <td>{{ tx._id }}</td>
+              <td>{{ tx.transactionDate if tx.transactionDate else 'N/A' }}</td>
+              <td>{{ tx.totalEarnings if tx.totalEarnings else 'N/A' }}</td>
+              <td>
+                {% if tx.items %}
+                  <ul class="item-list">
+                    {% for item in tx.items %}
+                      <li>{{ item.type }} — ₹{{ item.earnings }}</li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  No items
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
-      <p>You have not made any transactions yet.</p>
+      <p class="no-transactions">You have not made any transactions yet.</p>
     {% endif %}
-  </div>
+  </main>
 </body>
 </html>

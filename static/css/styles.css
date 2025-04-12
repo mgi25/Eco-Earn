@@ -1,6 +1,6 @@
-/* ==============================
-   RESET & GLOBAL STYLES
-============================== */
+/* ==========================================================================
+   RESET & GLOBAL STYLES (Initial Block)
+============================================================================= */
 * {
   margin: 0;
   padding: 0;
@@ -8,14 +8,15 @@
 }
 html, body {
   height: 100%;
+  /* Updated to include a modern, clean look using Segoe UI and fallback fonts */
   font-family: 'Segoe UI', sans-serif;
   color: #333;
   background-color: #f9f9f9;
 }
 
-/* ==============================
-   NAVIGATION
-============================== */
+/* ==========================================================================
+   NAVIGATION (Initial Block)
+============================================================================= */
 .navbar {
   display: flex;
   align-items: center;
@@ -44,23 +45,40 @@ html, body {
   color: #1a2e12;
 }
 
-/* Admin Navbar */
+/* ==========================================================================
+   ADMIN NAVIGATION (Initial Block)
+============================================================================= */
 .admin-navbar {
   background-color: #2d4b1f;
+  padding: 20px 60px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .admin-navbar .nav-logo {
-  color: #fff;
+  color: #246c11; /* Adjusted for contrast */
 }
 .admin-navbar .nav-links a {
-  color: #fff;
+  color: #246c11;
 }
 .admin-navbar .nav-links a:hover {
-  color: #e1e1e1;
+  color: #0e0e0e;
 }
 
-/* ==============================
-   CONTAINERS & HEADINGS
-============================== */
+/* ==========================================================================
+   ADMIN HEADER (For clear text in admin panels)
+============================================================================= */
+.admin-header {
+  background-color: #2d4b1f;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   CONTAINERS & HEADINGS (Initial Block)
+============================================================================= */
 .container {
   max-width: 1200px;
   margin: 20px auto;
@@ -71,17 +89,25 @@ html, body {
   font-size: 32px;
   margin-bottom: 20px;
   color: #2d4b1f;
+  text-align: center;
+}
+.flash-messages p {
+  background-color: #f2dede;
+  color: #a94442;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
 }
 
-/* ==============================
-   HERO SECTION
-============================== */
+/* ==========================================================================
+   HERO SECTION (Initial Block)
+============================================================================= */
 .hero {
   display: flex;
   align-items: center;
   justify-content: center;
   height: calc(100vh - 74px);
-  background: url("../images/registration_page_image.jpg") no-repeat center center;
+  background: url("../images/forest.jpg") no-repeat center center;
   background-size: cover;
 }
 .hero-content {
@@ -113,9 +139,9 @@ html, body {
   background-color: #1f3414;
 }
 
-/* ==============================
-   SPLIT-SCREEN (SIGNUP/LOGIN)
-============================== */
+/* ==========================================================================
+   SPLIT-SCREEN (SIGNUP/LOGIN) & FORM ELEMENTS (Initial Block)
+============================================================================= */
 .main-container {
   display: flex;
   height: 100vh;
@@ -189,9 +215,93 @@ html, body {
   background-size: cover;
 }
 
-/* ==============================
-   HOME DASHBOARD & PROFILE
-============================== */
+/* ==========================================================================
+   AUTH PAGES (LOGIN & SIGNUP) – Upgraded Design
+============================================================================= */
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+.auth-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: #fff;
+}
+.auth-right {
+  flex: 1;
+  background: url("../images/login_background.jpg") no-repeat center center;
+  background-size: cover;
+}
+.auth-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 40px 30px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+}
+.auth-card h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #2d4b1f;
+}
+.auth-card .input-group {
+  margin-bottom: 20px;
+}
+.auth-card .input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #333;
+}
+.auth-card .input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border 0.2s ease;
+}
+.auth-card .input-group input:focus {
+  border-color: #2d4b1f;
+}
+.auth-card button,
+.auth-card .btn {
+  display: block;
+  width: 100%;
+  background-color: #2d4b1f;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+.auth-card button:hover,
+.auth-card .btn:hover {
+  background-color: #1f3414;
+}
+.auth-extra {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+.auth-extra a {
+  color: #007bff;
+  text-decoration: none;
+}
+.auth-extra a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   HOME DASHBOARD & PROFILE (Initial Block)
+============================================================================= */
 .dashboard {
   padding: 40px 60px;
 }
@@ -239,9 +349,9 @@ html, body {
   background-color: #1f3414;
 }
 
-/* ==============================
-   STATS SECTION
-============================== */
+/* ==========================================================================
+   STATS SECTION (Initial Block)
+============================================================================= */
 .stats-container {
   margin: 40px 0;
   text-align: center;
@@ -275,14 +385,15 @@ html, body {
   color: #555;
 }
 
-/* ==============================
-   MAIN ACTION CARDS
-============================== */
+/* ==========================================================================
+   MAIN ACTION CARDS & ANNOUNCEMENTS (Initial Block)
+============================================================================= */
 .cards-container {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
   margin-bottom: 40px;
+  justify-content: center;
 }
 .card {
   flex: 1 1 calc(33% - 20px);
@@ -291,6 +402,10 @@ html, body {
   padding: 20px;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
 }
 .card h2 {
   font-size: 24px;
@@ -314,10 +429,6 @@ html, body {
 .card a:hover {
   background-color: #1f3414;
 }
-
-/* ==============================
-   ANNOUNCEMENTS / ECO TIPS
-============================== */
 .announcements {
   margin-bottom: 40px;
 }
@@ -335,9 +446,9 @@ html, body {
   color: #2d4b1f;
 }
 
-/* ==============================
-   SCAN/UPLOAD PAGE
-============================== */
+/* ==========================================================================
+   SCAN/UPLOAD PAGE (Initial Block)
+============================================================================= */
 .flex-wrapper {
   display: flex;
   gap: 30px;
@@ -387,18 +498,15 @@ html, body {
   border-radius: 4px;
   cursor: pointer;
 }
-.input-group {
-  margin-bottom: 20px;
-}
 .input-group label {
   display: block;
   margin-bottom: 8px;
   color: #333;
 }
 
-/* ==============================
-   TABLES (ADMIN)
-============================== */
+/* ==========================================================================
+   TABLES (ADMIN, TRANSACTION HISTORY) – Initial Block
+============================================================================= */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -426,9 +534,9 @@ html, body {
   border-bottom: 2px solid #ccc;
 }
 
-/* ==============================
-   BUTTONS
-============================== */
+/* ==========================================================================
+   BUTTONS (Initial Block)
+============================================================================= */
 .btn {
   padding: 10px 20px;
   background-color: #2d4b1f;
@@ -465,9 +573,9 @@ html, body {
   background-color: #c0392b;
 }
 
-/* ==============================
-   RESPONSIVE MEDIA QUERIES
-============================== */
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES – Initial Block
+============================================================================= */
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;
@@ -506,15 +614,15 @@ html, body {
   }
 }
 
-/* ==============================
-   HOME CONTENT SPECIFIC STYLES
-============================== */
+/* ==========================================================================
+   HOME CONTENT SPECIFIC STYLES – Initial Block
+============================================================================= */
 .hero-logged-in {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 50vh;
-  background: url("../images/forest_background.jpg") no-repeat center center;
+  background: url("../images/forest.jpg") no-repeat center center;
   background-size: cover;
 }
 .home-background {
@@ -539,9 +647,9 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* ==============================
-   ADMIN FORM SPECIFIC STYLES
-============================== */
+/* ==========================================================================
+   ADMIN FORM SPECIFIC STYLES – Initial Block
+============================================================================= */
 .form-container {
   background-color: #fff;
   padding: 20px 30px;
@@ -573,9 +681,9 @@ html, body {
   flex: 1;
 }
 
-/* ==============================
-   CENTER CARD (Recycling Centers List)
-============================== */
+/* ==========================================================================
+   CENTER CARD (Recycling Centers List) – Initial Block
+============================================================================= */
 .center-card {
   background-color: #fff;
   border-radius: 8px;
@@ -594,23 +702,25 @@ html, body {
   color: #555;
 }
 
-/* ==============================
-   Map Container Styles
-============================== */
+/* ==========================================================================
+   MAP CONTAINER STYLES
+============================================================================= */
 #map,
 .map-container {
   height: 400px;
   width: 100%;
   margin-top: 20px;
 }
-/* Redeem Rewards Page */
+
+/* ==========================================================================
+   REDEEM REWARDS PAGE
+============================================================================= */
 .redeem-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 40px;
 }
-
 .redeem-card {
   background-color: #fff;
   max-width: 500px;
@@ -620,45 +730,38 @@ html, body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
 }
-
 .redeem-title {
   font-size: 24px;
   margin-bottom: 10px;
-  color: #2d4b1f; /* Adjust to your brand color */
+  color: #2d4b1f;
 }
-
 .redeem-balance {
   font-size: 36px;
   font-weight: 600;
   color: #2d4b1f;
   margin-bottom: 20px;
 }
-
 .redeem-text {
   font-size: 16px;
   margin-bottom: 30px;
   color: #555;
 }
-
 .redeem-form {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-.form-group {
+.redeem-form .form-group {
   margin-bottom: 20px;
   width: 100%;
   text-align: left;
 }
-
-.form-label {
+.redeem-form .form-label {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
   color: #333;
 }
-
 .redeem-form input[type="number"] {
   width: 100%;
   padding: 10px;
@@ -666,7 +769,6 @@ html, body {
   border-radius: 8px;
   font-size: 16px;
 }
-
 .btn-redeem {
   background-color: #2d4b1f;
   color: #fff;
@@ -677,20 +779,14 @@ html, body {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 .btn-redeem:hover {
   background-color: #1f3414;
 }
 
-/* Optional: Flash messages styling */
-.flash-messages p {
-  background-color: #f2dede;
-  color: #a94442;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-/* Profile Page Styles */
+/* ==========================================================================
+   PROFILE PAGE & PROFILE EDIT FORM STYLES
+============================================================================= */
+/* Profile Details (View) */
 .profile-details {
   background-color: #fff;
   padding: 30px;
@@ -699,13 +795,11 @@ html, body {
   max-width: 600px;
   margin: 20px auto;
 }
-
 .profile-details p {
   font-size: 16px;
   margin: 10px 0;
   color: #333;
 }
-
 .profile-details a.btn {
   display: inline-block;
   margin-top: 20px;
@@ -716,12 +810,10 @@ html, body {
   border-radius: 6px;
   transition: background-color 0.3s ease;
 }
-
 .profile-details a.btn:hover {
   background-color: #1f3414;
 }
-
-/* Profile Edit Form Styles */
+/* Profile Edit Form */
 form {
   background-color: #fff;
   padding: 30px;
@@ -730,18 +822,15 @@ form {
   max-width: 600px;
   margin: 20px auto;
 }
-
 form .form-group {
   margin-bottom: 15px;
 }
-
 form label {
   display: block;
   margin-bottom: 5px;
   font-weight: 600;
   color: #333;
 }
-
 form input[type="text"],
 form input[type="email"],
 form textarea {
@@ -751,7 +840,6 @@ form textarea {
   border-radius: 6px;
   font-size: 16px;
 }
-
 form button.btn {
   background-color: #2d4b1f;
   color: #fff;
@@ -761,16 +849,221 @@ form button.btn {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-
 form button.btn:hover {
   background-color: #1f3414;
 }
 
-/* Flash Messages */
+/* ==========================================================================
+   FLASH MESSAGES (Initial Block)
+============================================================================= */
 .flash-messages p {
   background-color: #f2dede;
   color: #a94442;
   padding: 10px;
   border-radius: 6px;
-  margin: 10px 0;
+  margin-bottom: 10px;
+}
+
+/* ==========================================================================
+   GLOBAL STYLES (Additional/Duplicate Block)
+============================================================================= */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f4f8;
+  color: #333;
+}
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 60px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.nav-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d4b1f;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+.nav-links li a {
+  text-decoration: none;
+  font-weight: 600;
+  color: #2d4b1f;
+  transition: color 0.3s ease;
+}
+.nav-links li a:hover {
+  color: #1f3414;
+}
+.hero {
+  position: relative;
+  height: 70vh;
+  background-size: cover;
+  background-position: center;
+}
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(45,75,31,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-content {
+  text-align: center;
+  color: #fff;
+}
+.hero-content h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+.hero-content p {
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+.cta-button {
+  display: inline-block;
+  padding: 14px 40px;
+  font-size: 18px;
+  background-color: #2d4b1f;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+.cta-button:hover {
+  background-color: #1f3414;
+}
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  justify-content: center;
+}
+.action-card {
+  flex: 1 1 300px;
+}
+.profile-summary.card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.profile-summary .profile-image img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 20px;
+}
+.profile-summary .profile-info h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #2d4b1f;
+}
+.stats-card.card {
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.stats-card h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #2d4b1f;
+}
+.stats-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+}
+.stat-box {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 15px;
+  width: 30%;
+}
+.stat-box h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #333;
+}
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #2d4b1f;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+.btn:hover {
+  background-color: #1f3414;
+}
+.btn.btn-outline {
+  background-color: transparent;
+  color: #2d4b1f;
+  border: 2px solid #2d4b1f;
+}
+.btn.btn-outline:hover {
+  background-color: #2d4b1f;
+  color: #fff;
+}
+.announcements {
+  margin-top: 40px;
+}
+.announcements h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #2d4b1f;
+}
+.announcements ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+.announcements li {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #555;
+}
+.announcements li img {
+  margin-top: 10px;
+  border-radius: 8px;
+}
+@media (max-width: 768px) {
+  .dashboard-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .stats-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .stat-box {
+    width: 80%;
+    margin-bottom: 15px;
+  }
 }

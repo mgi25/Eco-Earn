@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Edit Profile | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_profile.css') }}">
 </head>
 <body>
   <nav class="navbar">
@@ -16,7 +16,7 @@
 
   <div class="container">
     <h1 class="page-heading">Edit Profile</h1>
-    
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <div class="flash-messages">
@@ -27,7 +27,6 @@
       {% endif %}
     {% endwith %}
 
-    <!-- IMPORTANT: enctype="multipart/form-data" for file uploads -->
     <form method="POST" enctype="multipart/form-data">
       <div class="form-group">
         <label for="name">Name:</label>
@@ -43,15 +42,14 @@
       </div>
       <div class="form-group">
         <label for="address">Address:</label>
-        <textarea name="address" id="address" rows="3" placeholder="Enter your address">{{ user.address if user.address else '' }}</textarea>
+        <textarea name="address" id="address" rows="3">{{ user.address if user.address else '' }}</textarea>
       </div>
-      <!-- NEW: Profile Image Field -->
       <div class="form-group">
         <label for="profile_image">Profile Picture:</label>
         <input type="file" name="profile_image" id="profile_image" accept="image/*">
         {% if user.profilePicture %}
           <p>Current Image:</p>
-          <img src="{{ url_for('static', filename=user.profilePicture) }}" alt="Profile Picture" width="120">
+          <img src="{{ url_for('static', filename=user.profilePicture) }}" alt="Profile Picture">
         {% endif %}
       </div>
       <button type="submit" class="btn">Update Profile</button>

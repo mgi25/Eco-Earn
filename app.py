@@ -26,7 +26,8 @@ if "location_2dsphere" not in db.recyclingCenters.index_information():
 # File upload configuration
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024  # 64 MB
+app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024  # 128 MB
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
@@ -125,13 +126,12 @@ def scan_item():
                 filename = secure_filename(file.filename)
                 save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(save_path)
-                
-                # Insert a new item document into db.items
+
                 db.items.insert_one({
                     "userId": session['user_id'],
-                    "type": "Unknown",  # or something from AI detection
+                    "type": "Unknown",
                     "status": "Pending",
-                    "predictedValue": 0,  # placeholder
+                    "predictedValue": 0,
                     "photoUrl": f"uploads/{filename}",
                     "uploadDate": time.strftime("%Y-%m-%d")
                 })
@@ -142,21 +142,32 @@ def scan_item():
                 flash("Invalid file type! Please upload an image file.")
                 return redirect(request.url)
 
-        # Multiple base64 images from camera
+        # Multiple base64 camera images
         photos_json = request.form.get('photosBase64')
         if photos_json:
             try:
                 photos_list = json.loads(photos_json)
+                MAX_IMAGES = 10
+                MAX_SIZE_MB = 8  # per image
+
+                if len(photos_list) > MAX_IMAGES:
+                    flash(f"You can only upload up to {MAX_IMAGES} images at once.")
+                    return redirect(request.url)
+
                 count = 0
                 for base64_str in photos_list:
                     header, encoded = base64_str.split(',', 1)
                     img_data = base64.b64decode(encoded)
+
+                    if len(img_data) > MAX_SIZE_MB * 1024 * 1024:
+                        flash(f"Image {count+1} is too large! Limit is {MAX_SIZE_MB}MB per image.")
+                        continue
+
                     filename = f"captured_{int(time.time())}_{count}.png"
                     save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     with open(save_path, 'wb') as f:
                         f.write(img_data)
 
-                    # Insert each captured image as a new item
                     db.items.insert_one({
                         "userId": session['user_id'],
                         "type": "Unknown",
@@ -168,8 +179,12 @@ def scan_item():
 
                     count += 1
 
-                flash(f"{count} captured photo(s) uploaded successfully! (Simulating scan...)")
+                if count > 0:
+                    flash(f"{count} photo(s) uploaded successfully!")
+                else:
+                    flash("No valid images were uploaded.")
                 return redirect(request.url)
+
             except Exception as e:
                 flash(f"Error saving captured photos: {e}")
                 return redirect(request.url)
@@ -612,8 +627,13 @@ def profile():
         return redirect(url_for('login'))
     
     # (Optional) Count items to show real stats:
-    items_count = db.items.count_documents({"userId": session['user_id']})
-    user['items_recycled'] = items_count
+    # Only count items marked as recycled
+    recycled_count = db.items.count_documents({
+    "userId": session['user_id'],
+    "status": "Recycled"
+    })
+    user['items_recycled'] = recycled_count
+
 
     return render_template('profile.html', user=user)
 

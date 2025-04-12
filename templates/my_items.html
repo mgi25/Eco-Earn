@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>My Items | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/my_items.css') }}">
 </head>
 <body>
   <nav class="navbar">
@@ -14,55 +14,57 @@
     </ul>
   </nav>
 
-  <div class="container">
+  <main class="container">
     <h1 class="page-heading">My Items</h1>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
+        <div class="flash-messages">
           {% for message in messages %}
-            <li>{{ message }}</li>
+            <p>{{ message }}</p>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
-    <p>Below is a list of all items you’ve scanned or uploaded:</p>
+    <p class="description">Below is a list of all items you’ve scanned or uploaded:</p>
 
     {% if items %}
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Item ID</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Predicted Value</th>
-            <th>Date</th>
-            <th>Photo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-          <tr>
-            <td>{{ item._id }}</td>
-            <td>{{ item.type if item.type else 'Unknown' }}</td>
-            <td>{{ item.status if item.status else 'Pending' }}</td>
-            <td>{{ item.predictedValue if item.predictedValue else 'N/A' }}</td>
-            <td>{{ item.uploadDate if item.uploadDate else 'N/A' }}</td>
-            <td>
-              {% if item.photoUrl %}
-                <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Image" width="100">
-              {% else %}
-                No photo
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-wrapper">
+        <table class="item-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Value</th>
+              <th>Date</th>
+              <th>Photo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td>{{ item._id }}</td>
+              <td>{{ item.type if item.type else 'Unknown' }}</td>
+              <td>{{ item.status if item.status else 'Pending' }}</td>
+              <td>{{ item.predictedValue if item.predictedValue else 'N/A' }}</td>
+              <td>{{ item.uploadDate if item.uploadDate else 'N/A' }}</td>
+              <td>
+                {% if item.photoUrl %}
+                  <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Image">
+                {% else %}
+                  No photo
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     {% else %}
-      <p>You have not uploaded any items yet.</p>
+      <p class="no-items">You have not uploaded any items yet.</p>
     {% endif %}
-  </div>
+  </main>
 </body>
 </html>

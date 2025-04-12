@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - {{ action }} Announcement | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_announcement_form.css') }}">
 </head>
 <body>
   <nav class="navbar admin-navbar">
@@ -14,28 +14,32 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
+
   <div class="container form-container">
     <h1 class="page-heading">{{ action }} Announcement</h1>
-    <form method="POST" enctype="multipart/form-data">
+
+    <form method="POST" enctype="multipart/form-data" class="admin-form">
       <div class="form-group">
-        <label for="title">Title:</label>
+        <label for="title">Title</label>
         <input type="text" name="title" id="title" placeholder="Enter announcement title"
                value="{{ announcement.title if announcement.title else '' }}" required>
       </div>
+
       <div class="form-group">
-        <label for="content">Content:</label>
+        <label for="content">Content</label>
         <textarea name="content" id="content" rows="5" placeholder="Enter announcement content" required>{{ announcement.content if announcement.content else '' }}</textarea>
       </div>
+
       <div class="form-group">
-        <label for="announcement_image">Announcement Image (optional):</label>
+        <label for="announcement_image">Image (optional)</label>
         <input type="file" name="announcement_image" id="announcement_image" accept="image/*">
         {% if announcement.image %}
-          <p>Current image:<br>
-            <img src="{{ url_for('static', filename=announcement.image) }}" alt="Announcement Image" width="150">
-          </p>
+          <p>Current Image:</p>
+          <img src="{{ url_for('static', filename=announcement.image) }}" alt="Announcement Image" class="preview-img">
         {% endif %}
       </div>
-      <button type="submit" class="btn">{{ action }} Announcement</button>
+
+      <button type="submit" class="btn submit-btn">{{ action }} Announcement</button>
     </form>
   </div>
 </body>

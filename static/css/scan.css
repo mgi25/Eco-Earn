@@ -1,0 +1,213 @@
+/* =============================
+   RESET + GLOBAL BASE STYLES
+============================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+  }
+  
+  /* ======================
+     NAVIGATION BAR STYLES
+  ====================== */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 2rem;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #204e34;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #204e34;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-links a:hover {
+    color: #2a9d8f;
+  }
+  
+  /* =============================
+     CAMERA + UPLOAD PAGE STYLES
+  ============================= */
+  .scan-container {
+    max-width: 1300px;
+    margin: 3rem auto;
+    padding: 0 2rem;
+  }
+  
+  .page-heading {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #204e34;
+    margin-bottom: 2rem;
+    font-weight: 700;
+  }
+  
+  .scan-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    flex: 1 1 500px;
+    max-width: 550px;
+    transition: transform 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2a9d8f;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+  }
+  
+  #cameraPreview {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px;
+    border: 2px solid #2a9d8f;
+    object-fit: cover;
+    margin-bottom: 1rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.4rem;
+    background-color: #2a9d8f;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    margin-right: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #1e6e5c;
+    box-shadow: 0 4px 10px rgba(42, 157, 143, 0.3);
+  }
+  
+  .btn-upload {
+    background-color: #204e34;
+  }
+  
+  .btn-upload:hover {
+    background-color: #2a9d8f;
+  }
+  
+  .input-group {
+    margin-top: 1rem;
+  }
+  
+  .input-group label {
+    display: block;
+    font-weight: 600;
+    color: #204e34;
+    margin-bottom: 0.5rem;
+  }
+  
+  .input-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    border: 2px dashed #2a9d8f;
+    background-color: #f4fefc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .input-group input[type="file"]:hover {
+    background-color: #e0f7f2;
+  }
+  
+  .thumbnails-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1rem 0;
+    justify-content: center;
+  }
+  
+  .thumbnails-container img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #2a9d8f;
+    transition: transform 0.3s ease;
+  }
+  
+  .thumbnails-container img:hover {
+    transform: scale(1.1);
+  }
+  
+  .flash-messages {
+    list-style: none;
+    background: #e6ffed;
+    border-left: 4px solid #2a9d8f;
+    padding: 1rem 1.5rem;
+    margin: 1rem auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    font-weight: 500;
+    color: #204e34;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .scan-flex {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .card {
+      max-width: 100%;
+    }
+  
+    .page-heading {
+      font-size: 2rem;
+    }
+  }
+  

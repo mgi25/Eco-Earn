@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>My Profile | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 </head>
 <body>
   <nav class="navbar">
@@ -14,12 +14,12 @@
     </ul>
   </nav>
 
-  <div class="container">
-    <h1 class="page-heading">My Profile</h1>
-    
+  <div class="profile-container">
+    <h1 class="page-title">My Profile</h1>
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="flash-messages">
+        <div class="flash">
           {% for message in messages %}
             <p>{{ message }}</p>
           {% endfor %}
@@ -28,13 +28,20 @@
     {% endwith %}
 
     {% if user %}
-      <p><strong>Name:</strong> {{ user.name }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Total Items Recycled:</strong> {{ user.items_recycled }}</p>
-      <p><strong>Total Rewards Earned:</strong> {{ user.rewards }}</p>
-      <a href="{{ url_for('edit_profile') }}" class="btn">Edit Profile</a>
+    <div class="profile-card">
+      <div class="profile-image">
+        <img src="{{ url_for('static', filename=user.profilePicture if user.profilePicture else 'images/default_avatar.jpg') }}" alt="Profile Image">
+      </div>
+      <div class="profile-details">
+        <h2>{{ user.name }}</h2>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Total Items Recycled:</strong> {{ user.items_recycled }}</p>
+        <p><strong>Total Rewards Earned:</strong> {{ user.rewards }}</p>
+        <a href="{{ url_for('edit_profile') }}" class="btn">Edit Profile</a>
+      </div>
+    </div>
     {% else %}
-      <p>User not found. Please log in again.</p>
+      <p class="error">User not found. Please log in again.</p>
     {% endif %}
   </div>
 </body>

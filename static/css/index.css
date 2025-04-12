@@ -1,0 +1,124 @@
+/* ==========================================================================
+   RESET & GLOBAL STYLES
+============================================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    height: 100%;
+    font-family: "Segoe UI", sans-serif;
+    color: #333;
+    background: linear-gradient(135deg, #f9f9f9, #eaeaea);
+  }
+  
+  /* ==========================================================================
+     NAVIGATION
+  ============================================================================= */
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2d4b1f;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #2d4b1f;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-links li a:hover {
+    color: #1a2e12;
+  }
+  
+  /* ==========================================================================
+     HERO SECTION
+  ============================================================================= */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 70px); /* Adjust according to your navbar height */
+    background: linear-gradient(135deg, #ebf8e1, #eaf4ff);
+    text-align: center;
+    padding: 0 20px;
+  }
+  
+  .hero-content {
+    max-width: 600px;
+  }
+  
+  .hero-content h1 {
+    font-size: 48px;
+    color: #2d4b1f;
+    margin-bottom: 20px;
+  }
+  
+  .hero-content p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 30px;
+  }
+  
+  /* Call-to-action button */
+  .cta-button {
+    display: inline-block;
+    padding: 14px 36px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #2d4b1f;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .cta-button:hover {
+    background-color: #1f3414;
+  }
+  
+  /* ==========================================================================
+     FOOTER (if applicable)
+  ============================================================================= */
+  .footer {
+    text-align: center;
+    font-size: 14px;
+    padding: 20px;
+    color: #777;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+  }
+  
+  /* ==========================================================================
+     RESPONSIVE MEDIA QUERIES
+  ============================================================================= */
+  @media (max-width: 768px) {
+    .hero {
+      height: auto;
+      padding: 60px 20px;
+    }
+    .hero-content h1 {
+      font-size: 36px;
+    }
+    .hero-content p {
+      font-size: 16px;
+    }
+  }
+  

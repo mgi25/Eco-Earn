@@ -1,0 +1,207 @@
+/* admin_centers.css */
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f4f8;
+    color: #1c3d28;
+  }
+  
+  .admin-navbar {
+    background-color: #2a9d8f;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  
+  .nav-links a:hover {
+    opacity: 0.8;
+  }
+  
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  .page-heading {
+    font-size: 2rem;
+    text-align: center;
+    color: #1c3d28;
+    margin-bottom: 1.5rem;
+  }
+  
+  .action-btn {
+    display: inline-block;
+    margin-bottom: 1rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
+    background-color: #2a9d8f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+  }
+  
+  .action-btn:hover {
+    background-color: #1f7e6a;
+  }
+  
+  .delete-form {
+    display: inline-block;
+    margin: 0;
+  }
+  
+  .delete-btn {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .admin-table th,
+  .admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 0.95rem;
+    vertical-align: middle;
+    text-align: center;
+  }
+  
+  .admin-table thead {
+    background-color: #1c3d28;
+    color: #fff;
+  }
+  
+  .admin-table img {
+    max-width: 80px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .admin-table td .action-btn,
+  .admin-table td .delete-btn {
+    display: inline-block;
+    margin: 2px;
+  }
+  
+  .admin-table td form,
+  .admin-table td a {
+    margin-bottom: 0;
+  }
+  
+  .admin-table tbody tr td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Form container (Add/Edit center) */
+  .form-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1c3d28;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #f8fafc;
+    color: #1c3d28;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .half-width {
+    flex: 1;
+    min-width: 250px;
+  }
+  
+  .btn {
+    background-color: #2a9d8f;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #1f7e6a;
+  }
+  
+  @media (max-width: 768px) {
+    .admin-table th,
+    .admin-table td {
+      padding: 0.75rem;
+    }
+    .nav-links {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+  

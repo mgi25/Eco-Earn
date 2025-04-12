@@ -1,7 +1,5 @@
-// static/js/camera.js
-
 let videoStream = null;
-let capturedPhotos = []; // array of base64 strings from camera & files
+let capturedPhotos = []; // array of compressed base64 strings
 
 function startCamera() {
   const video = document.getElementById('cameraPreview');
@@ -22,7 +20,7 @@ function startCamera() {
     });
 }
 
-function takePicture() {
+async function takePicture() {
   const video = document.getElementById('cameraPreview');
   if (!videoStream) {
     alert("Camera is not running. Please open camera first!");
@@ -35,21 +33,22 @@ function takePicture() {
   const ctx = canvas.getContext('2d');
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  const dataURL = canvas.toDataURL('image/png');
-  capturedPhotos.push(dataURL);
+  const originalDataURL = canvas.toDataURL('image/jpeg');
+  const resized = await resizeImage(originalDataURL);
+  capturedPhotos.push(resized);
   renderThumbnails();
 }
 
 function handleFileSelect(event) {
-  const files = event.target.files; // a FileList of all selected files
+  const files = event.target.files;
   if (!files.length) return;
 
-  // read each file as base64
   Array.from(files).forEach(file => {
     const reader = new FileReader();
-    reader.onload = e => {
-      const dataURL = e.target.result; // base64 string
-      capturedPhotos.push(dataURL);
+    reader.onload = async e => {
+      const originalDataURL = e.target.result;
+      const resized = await resizeImage(originalDataURL);
+      capturedPhotos.push(resized);
       renderThumbnails();
     };
     reader.readAsDataURL(file);
@@ -63,7 +62,7 @@ function removePhoto(index) {
 
 function renderThumbnails() {
   const container = document.getElementById('thumbnailsContainer');
-  container.innerHTML = ''; // clear old content
+  container.innerHTML = '';
 
   capturedPhotos.forEach((photo, index) => {
     const thumbDiv = document.createElement('div');
@@ -81,6 +80,35 @@ function renderThumbnails() {
     thumbDiv.appendChild(img);
     thumbDiv.appendChild(removeBtn);
     container.appendChild(thumbDiv);
+  });
+}
+
+function resizeImage(base64Str, maxWidth = 800, maxHeight = 800) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      let canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth) {
+        height = (maxWidth / width) * height;
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width = (maxHeight / height) * width;
+        height = maxHeight;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      resolve(canvas.toDataURL("image/jpeg", 0.8)); // 80% quality JPEG
+    };
   });
 }
 

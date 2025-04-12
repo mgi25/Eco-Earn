@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Redeem Details | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/redeem_details.css') }}">
 </head>
 <body>
   <nav class="navbar">
@@ -14,7 +14,7 @@
     </ul>
   </nav>
 
-  <div class="container redeem-container">
+  <main class="container redeem-container">
     <h1 class="page-heading">Redeem Payment Details</h1>
 
     {% with messages = get_flashed_messages() %}
@@ -46,6 +46,6 @@
         <button type="submit" class="btn btn-redeem">Confirm Redemption</button>
       </form>
     </div>
-  </div>
+  </main>
 </body>
 </html>

@@ -1,0 +1,133 @@
+/* redeem_rewards.css */
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f5faf7;
+    color: #204e34;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #204e34;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #204e34;
+    transition: color 0.2s;
+  }
+  
+  .nav-links a:hover {
+    color: #2a9d8f;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  .page-heading {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .flash-messages {
+    background-color: #e6ffed;
+    padding: 1rem;
+    border-left: 4px solid #2a9d8f;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    color: #155e4b;
+  }
+  
+  .redeem-card {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+  
+  .redeem-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .redeem-balance {
+    font-size: 2.5rem;
+    color: #2a9d8f;
+    font-weight: 700;
+    margin: 0.5rem 0 1rem;
+  }
+  
+  .redeem-text {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+  
+  .redeem-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  input[type="number"] {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .btn-redeem {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #2a9d8f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-redeem:hover {
+    background-color: #1e6e5c;
+  }
+  
+  .error-message {
+    text-align: center;
+    color: #b00020;
+    font-weight: 500;
+    margin-top: 2rem;
+  }
+  

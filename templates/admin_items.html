@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Items | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_items.css') }}">
+  <style>
+    .item-photo {
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
 </head>
 <body>
   <nav class="navbar admin-navbar">
@@ -18,13 +24,14 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
-  
+
   <div class="container">
-    <h1 class="page-heading">Manage Items</h1>
+    <h1 class="page-heading">Manage Uploaded Items</h1>
     <table class="admin-table">
       <thead>
         <tr>
           <th>Item ID</th>
+          <th>User ID</th>
           <th>Type</th>
           <th>Status</th>
           <th>Predicted Value</th>
@@ -36,13 +43,14 @@
         {% for item in items %}
         <tr>
           <td>{{ item._id }}</td>
+          <td>{{ item.userId }}</td>
           <td>{{ item.type }}</td>
           <td>{{ item.status }}</td>
           <td>{{ item.predictedValue }}</td>
           <td>{{ item.uploadDate }}</td>
           <td>
             {% if item.photoUrl %}
-              <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Photo" width="80">
+              <img src="{{ url_for('static', filename=item.photoUrl) }}" alt="Item Photo" width="80" class="item-photo">
             {% else %}
               N/A
             {% endif %}

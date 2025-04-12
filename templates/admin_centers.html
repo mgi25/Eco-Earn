@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin - Recycling Centers | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_centers.css') }}">
 </head>
 <body>
   <nav class="navbar admin-navbar">
@@ -18,11 +18,11 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
-  
-  <div class="container">
+
+  <main class="container">
     <h1 class="page-heading">Manage Recycling Centers</h1>
     <a href="{{ url_for('admin_add_center') }}" class="action-btn">Add New Center</a>
-    
+
     <table class="admin-table">
       <thead>
         <tr>
@@ -40,13 +40,7 @@
           <td>{{ center._id }}</td>
           <td>{{ center.name }}</td>
           <td>{{ center.address if center.address else 'N/A' }}</td>
-          <td>
-            {% if center.acceptedItems %}
-              {{ center.acceptedItems | join(', ') }}
-            {% else %}
-              N/A
-            {% endif %}
-          </td>
+          <td>{{ center.acceptedItems | join(', ') if center.acceptedItems else 'N/A' }}</td>
           <td>
             {% if center.image %}
               <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="80">
@@ -64,9 +58,8 @@
         {% endfor %}
       </tbody>
     </table>
-  </div>
-  
-  <!-- Admin JS for delete confirmation -->
+  </main>
+
   <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </body>
 </html>

@@ -1,45 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Get center data from hidden elements in the template
-  const centerName = document.getElementById("centerName").textContent;
-  const centerAddress = document.getElementById("centerAddress").textContent;
-  const centerCoordinates = JSON.parse(document.getElementById("centerCoordinates").textContent); // [lon, lat]
+// Updated center_map.js with user location support
 
-  const centerData = {
-    name: centerName,
-    address: centerAddress,
-    coordinates: centerCoordinates // [lon, lat]
-  };
+window.addEventListener("DOMContentLoaded", function () {
+  const coordElement = document.getElementById("centerCoordinates");
+  const centerName = document.getElementById("centerName")?.textContent || "Recycling Center";
+  const centerAddress = document.getElementById("centerAddress")?.textContent || "";
 
-  // Initialize map centered on the center's location
-  var map = L.map('map').setView([centerData.coordinates[1], centerData.coordinates[0]], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
+  if (!coordElement) return;
 
-  // Add a marker for the center location
-  let centerMarker = L.marker([centerData.coordinates[1], centerData.coordinates[0]]).addTo(map);
-  let popupText = "<strong>" + centerData.name + "</strong>";
-  if (centerData.address) {
-    popupText += "<br>" + centerData.address;
-  }
-  centerMarker.bindPopup(popupText).openPopup();
+  let coords = JSON.parse(coordElement.textContent || "[]");
 
-  // Try to retrieve and display the user's live location
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
-        // Optionally, you might want to create a custom icon for the user's marker
-        let userMarker = L.marker([userLat, userLon]).addTo(map);
-        userMarker.bindPopup("<strong>Your Location</strong>").openPopup();
-      },
-      function (error) {
-        console.log("Error retrieving live location:", error.message);
-      }
-    );
+  if (coords.length === 2) {
+    const [lon, lat] = coords; // GeoJSON: [longitude, latitude]
+    const map = L.map("map").setView([lat, lon], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const popupText = `<strong>${centerName}</strong><br>${centerAddress}`;
+    L.marker([lat, lon]).addTo(map).bindPopup(popupText).openPopup();
+
+    // Optional: User live location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+
+          const userMarker = L.marker([userLat, userLon]).addTo(map);
+          userMarker.bindPopup("<strong>Your Location</strong>").openPopup();
+        },
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      console.log("Geolocation not supported by this browser.");
+    }
   } else {
-    console.log("Geolocation is not supported by this browser.");
+    alert("Center coordinates are invalid or missing.");
   }
 });

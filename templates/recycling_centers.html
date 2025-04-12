@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Recycling Centers | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/recycling_centers.css') }}">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
@@ -15,68 +14,59 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
-  
+
   <div class="container">
     <h1 class="page-heading">Recycling Center Locator</h1>
-    
-    <!-- Flash messages -->
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul>
+        <div class="flash-messages">
           {% for message in messages %}
-            <li>{{ message }}</li>
+            <p>{{ message }}</p>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
-    <!-- Buttons for sorting and viewing all centers -->
-    <div style="margin-bottom: 20px;">
-      <button class="btn" id="getLocationBtn">Show My Location &amp; Sort</button>
-      <a href="{{ url_for('recycling_centers') }}" class="btn" style="margin-left: 10px;">View All Centers</a>
+    <div class="controls">
+      <button class="btn" id="getLocationBtn">Show My Location & Sort</button>
+      <a href="{{ url_for('recycling_centers') }}" class="btn btn-secondary">View All Centers</a>
     </div>
 
-    <!-- If user location was passed, store it in hidden fields -->
     {% if user_location %}
       <input type="hidden" id="userLat" value="{{ user_location.lat }}">
       <input type="hidden" id="userLon" value="{{ user_location.lon }}">
     {% endif %}
-    
-    <!-- Map Container -->
+
     <div id="map"></div>
-    
-    <!-- List of Centers -->
-    <div id="centersList">
+
+    <div class="centers-list">
       {% for center in centers %}
-      <div class="center-card center-item"
-           data-name="{{ center.name }}"
-           data-items="{{ center.acceptedItems | join(' ') }}"
-           {% if center.location and center.location.coordinates %}
-             data-lon="{{ center.location.coordinates[0] }}"
-             data-lat="{{ center.location.coordinates[1] }}"
-           {% endif %}
-      >
-        <h2>{{ center.name }}</h2>
-        <p>{{ center.address if center.address else 'No address provided' }}</p>
-        {% if center.acceptedItems %}
-          <p><strong>Accepted Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
-        {% endif %}
-        {% if center.distance %}
-          <p><strong>Distance:</strong> {{ (center.distance / 1000) | round(2) }} km</p>
-        {% endif %}
-        {% if center.image %}
-          <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image" width="150">
-        {% endif %}
-        <br>
-        <a href="{{ url_for('center_map', center_id=center['_id']) }}" class="btn" style="margin-top:10px;">View on Map</a>
-      </div>
+        <div class="center-card center-item"
+             data-name="{{ center.name }}"
+             data-items="{{ center.acceptedItems | join(' ') }}"
+             {% if center.location and center.location.coordinates %}
+               data-lon="{{ center.location.coordinates[0] }}"
+               data-lat="{{ center.location.coordinates[1] }}"
+             {% endif %}>
+          <h2>{{ center.name }}</h2>
+          <p class="address">{{ center.address or 'No address provided' }}</p>
+          {% if center.acceptedItems %}
+            <p><strong>Accepted:</strong> {{ center.acceptedItems | join(', ') }}</p>
+          {% endif %}
+          {% if center.distance %}
+            <p><strong>Distance:</strong> {{ (center.distance / 1000) | round(2) }} km</p>
+          {% endif %}
+          {% if center.image %}
+            <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image">
+          {% endif %}
+          <a href="{{ url_for('center_map', center_id=center['_id']) }}" class="btn btn-map">View on Map</a>
+        </div>
       {% endfor %}
     </div>
   </div>
-  
-  <!-- Leaflet JS -->
+
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-  <!-- Custom JS for map logic -->
   <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 </body>
 </html>

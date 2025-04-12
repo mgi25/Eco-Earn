@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 </head>
 <body>
   <nav class="navbar admin-navbar">
@@ -18,8 +18,8 @@
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
-  
-  <div class="container">
+
+  <main class="container">
     <h1 class="page-heading">Admin Dashboard</h1>
     <div class="stats-grid">
       <div class="stat-box">
@@ -39,7 +39,7 @@
         <p>{{ stats.total_transactions }}</p>
       </div>
     </div>
-    <p>Use the navigation above to manage different sections.</p>
-  </div>
+    <p class="helper-text">Use the navigation above to manage different sections.</p>
+  </main>
 </body>
 </html>
