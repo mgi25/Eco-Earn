@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 import requests
 import uuid
 import re
+from markupsafe import Markup
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # Replace with your secret key
 
@@ -856,6 +857,92 @@ def request_connection(item_id):
 
     flash(f"✅ Request sent to nearby center: {closest_center['name']}")
     return redirect(url_for('my_items'))
+
+@app.route('/center/login', methods=['GET', 'POST'])
+def center_login():
+    test_email = "greenit@example.com"
+    if not db.center_logins.find_one({"email": test_email}):
+        test_center = db.recyclingCenters.find_one({"name": {"$regex": "green", "$options": "i"}})
+        if test_center:
+            db.center_logins.insert_one({
+                "email": test_email,
+                "password": bcrypt.hashpw("center123".encode('utf-8'), bcrypt.gensalt()),
+                "centerId": test_center["_id"],
+                "name": test_center["name"],
+                "role": "center"
+            })
+
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        center = db.center_logins.find_one({"email": email})
+        if center and bcrypt.checkpw(password.encode('utf-8'), center['password']):
+            session.clear()
+            session['center_id'] = str(center['centerId'])
+            session['center_name'] = center['name']
+            flash("Center login successful!", "success")
+            return redirect(url_for('center_dashboard'))
+
+        flash("Invalid center login credentials!", "error")
+        return redirect(url_for('center_login'))
+
+    return render_template("center_login.html")
+
+@app.route('/center/signup', methods=['GET', 'POST'])
+def center_signup():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+
+        if password != confirm:
+            flash("Passwords do not match!", "error")
+            return redirect(url_for('center_signup'))
+
+        existing = db.center_logins.find_one({"email": email})
+        if existing:
+            flash("Center with this email already exists.", "error")
+            return redirect(url_for('center_signup'))
+
+        # Create recycling center entry
+        center_id = db.recyclingCenters.insert_one({
+            "name": name,
+            "address": "",
+            "acceptedItems": [],
+            "location": None,
+            "image": None
+        }).inserted_id
+
+        # Create login entry
+        db.center_logins.insert_one({
+            "email": email,
+            "password": bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
+            "centerId": center_id,
+            "name": name,
+            "role": "center"
+        })
+
+        session.clear()
+        session['center_id'] = str(center_id)
+        session['center_name'] = name
+        flash("Center account created successfully!", "success")
+        return redirect(url_for('center_dashboard'))
+
+    return render_template("center_signup.html")
+
+
+
+@app.route('/center/dashboard')
+def center_dashboard():
+    if 'center_id' not in session:
+        flash("Please log in as a center.")
+        return redirect(url_for('center_login'))
+
+    center_name = session.get('center_name', 'Center')
+    return Markup(f"<h2>Welcome, <b>{center_name}</b></h2><p>Your center dashboard will appear here.</p>")
+
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):

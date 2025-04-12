@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Center Signup | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <div class="auth-background">
+    <div class="auth-overlay"></div>
+    <div class="auth-card">
+      <h2>Register Recycling Center</h2>
+      <p class="subtitle">Create your official center account</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <div class="input-group">
+          <label for="name">Center Name</label>
+          <input type="text" name="name" placeholder="e.g. GreenWorld Recycling" required>
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" placeholder="center@example.com" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" required>
+        </div>
+
+        <div class="input-group">
+          <label for="confirm">Confirm Password</label>
+          <input type="password" name="confirm" required>
+        </div>
+
+        <button type="submit" class="auth-btn">Create Center Account</button>
+      </form>
+
+      <div class="bottom-text">
+        <p>Already registered? <a href="{{ url_for('center_login') }}">Login instead</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

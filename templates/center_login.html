@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recycling Center Login | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <div class="auth-background">
+    <div class="auth-overlay"></div>
+    <div class="auth-card">
+      <h2>Recycling Center Login</h2>
+      <p class="subtitle">Authorized center login only</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <p class="flash {{ category }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" name="email" placeholder="center@example.com" required>
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" name="password" placeholder="Your center password" required>
+        </div>
+
+        <button type="submit" class="auth-btn">Login</button>
+      </form>
+
+      <div class="bottom-text">
+        <p><a href="{{ url_for('index') }}">← Back to EcoEarn Home</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
