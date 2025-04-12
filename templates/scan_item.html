@@ -1,11 +1,10 @@
+<!-- scan_item.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Scan & Upload Item | Eco-Earn</title>
-
+  <title>Scan & Upload Item | EcoEarn</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- NAVIGATION -->
@@ -17,25 +16,21 @@
     </ul>
   </nav>
 
-  <!-- MAIN CONTAINER -->
   <div class="scan-container">
     <h1 class="page-heading">Scan & Upload Item</h1>
 
-    <!-- Flash Message Styled Card -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="flash-messages">
-          {% for category, message in messages %}
-            <div class="flash-card {{ category }}">
-              {{ message|safe }}
-            </div>
+        <ul class="flash-messages">
+          {% for message in messages %}
+            <li>{{ message|safe }}</li>
           {% endfor %}
-        </div>
+        </ul>
       {% endif %}
     {% endwith %}
 
     <div class="scan-flex">
-      <!-- CAMERA SECTION -->
+      <!-- Camera Capture -->
       <div class="camera-section card">
         <h2 class="card-title">Live Camera</h2>
         <video id="cameraPreview" autoplay playsinline></video>
@@ -45,24 +40,37 @@
         </div>
       </div>
 
-      <!-- UPLOAD SECTION -->
+      <!-- Upload Images -->
       <div class="upload-section card">
         <h2 class="card-title">Upload Images</h2>
-        <div id="thumbnailsContainer" class="thumbnails-container"></div>
-
-        <form id="uploadForm" method="POST">
-          <input type="hidden" name="photosBase64" id="photosBase64">
-
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
           <div class="input-group">
             <label for="fileInput">Select Images:</label>
-            <input type="file" id="fileInput" name="item_image" accept="image/*" multiple>
+            <input type="file" name="image" id="fileInput" accept="image/*" required>
           </div>
-
           <button type="submit" class="btn btn-upload">Upload & Predict</button>
         </form>
       </div>
     </div>
-  </div>
+    {% if session.get('last_prediction') %}
+    <div class="ai-result-box">
+      <h3>♻️ AI Evaluation Result</h3>
+      <p><strong>Type:</strong> {{ session.get('material_type', 'Unknown') }}</p>
+      <p><strong>Estimated Value:</strong> ₹{{ session.get('estimated_value', '0') }}</p>
+      <p>
+        <strong>Status:</strong>
+        {% if session.get('recyclable') %}
+          <span style="color: green; font-weight: 600;">♻️ Recyclable</span>
+        {% else %}
+          <span style="color: red; font-weight: 600;">❌ Not Recyclable</span>
+        {% endif %}
+      </p>
+      {% if session.get('reason') %}
+        <p><strong>Reason:</strong> {{ session.get('reason') }}</p>
+      {% endif %}
+    </div>
+  {% endif %}
+  
 
   <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
 </body>
