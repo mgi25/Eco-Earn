@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Scan & Upload Item | Eco-Earn</title>
- 
+
   <link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -21,13 +21,16 @@
   <div class="scan-container">
     <h1 class="page-heading">Scan & Upload Item</h1>
 
-    {% with messages = get_flashed_messages() %}
+    <!-- Flash Message Styled Card -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <ul class="flash-messages">
-          {% for message in messages %}
-            <li>{{ message }}</li>
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-card {{ category }}">
+              {{ message|safe }}
+            </div>
           {% endfor %}
-        </ul>
+        </div>
       {% endif %}
     {% endwith %}
 
@@ -52,10 +55,10 @@
 
           <div class="input-group">
             <label for="fileInput">Select Images:</label>
-            <input type="file" id="fileInput" accept="image/*" multiple>
+            <input type="file" id="fileInput" name="item_image" accept="image/*" multiple>
           </div>
 
-          <button type="submit" class="btn btn-upload">Upload All</button>
+          <button type="submit" class="btn btn-upload">Upload & Predict</button>
         </form>
       </div>
     </div>
