@@ -1,3 +1,4 @@
+
 import os
 import time
 import json
@@ -115,48 +116,52 @@ def home():
     return render_template('home.html', user=user, announcements=announcements)
 
 RECYCLABLE_KEYWORDS = [
-    "plastic", "metal", "steel", "aluminum", "can", "bottle",
+    "plastic", "metal", "steel", "stainless", "aluminum", "can", "bottle",
     "glass", "tin", "container", "jar", "foil", "cup",
     "recyclable", "carton", "paper", "cardboard"
 ]
 
-
 def is_recyclable_item(text):
     if not text:
         return False
-
     text = text.lower()
     return any(keyword in text for keyword in RECYCLABLE_KEYWORDS)
 
-
 def reason_suggests_non_recyclable(reason):
-    non_recyclable_phrases = [
-        "not recyclable", "cannot be recycled", "not typically recyclable",
-        "difficult to recycle", "non-recyclable", "not accepted"
-    ]
+    if not reason:
+        return False
     reason = reason.lower()
-    return any(phrase in reason for phrase in non_recyclable_phrases)
-
+    strong_blocks = [
+        "not recyclable", "cannot be recycled", "non-recyclable", "not accepted in any form"
+    ]
+    return any(phrase in reason for phrase in strong_blocks)
 
 def prediction_has_conflict(prediction):
-    # Example: Type unknown but status recyclable
     return (
         "type: unknown" in prediction.lower() and
         ("recyclable" in prediction.lower() or "₹" in prediction.lower())
     )
-
 
 def extract_fields(prediction):
     type_match = re.search(r'type:\s*(.+)', prediction, re.IGNORECASE)
     value_match = re.search(r'estimated value:\s*[₹]?(.*)', prediction, re.IGNORECASE)
     reason_match = re.search(r'reason:\s*(.+)', prediction, re.IGNORECASE)
 
-    return {
-        "material_type": type_match.group(1).strip() if type_match else "Unknown",
-        "estimated_value": value_match.group(1).strip() if value_match else "0",
-        "reason": reason_match.group(1).strip() if reason_match else ""
-    }
+    material_type = type_match.group(1).strip() if type_match else "Unknown"
+    estimated_value = value_match.group(1).strip() if value_match else "0"
+    reason = reason_match.group(1).strip() if reason_match else ""
 
+    # ⬇️ Improve accuracy by overriding misleading type labels
+    if "stainless steel" in reason.lower() and "plastic" in material_type.lower():
+        material_type = "Stainless Steel"
+    elif "aluminum" in material_type.lower() and "stainless steel" in reason.lower():
+        material_type = "Stainless Steel"
+
+    return {
+        "material_type": material_type,
+        "estimated_value": estimated_value,
+        "reason": reason
+    }
 
 @app.route('/scan_item', methods=['GET', 'POST'])
 def scan_item():
@@ -179,7 +184,7 @@ def scan_item():
                 "http://localhost:11434/api/generate",
                 json={
                     "model": "llava",
-                    "prompt": "You are an AI that analyzes images to determine whether an item is recyclable. Respond in a structured format:\nType: [material]\nEstimated Value: ₹[amount]\nReason: [why or why not it's recyclable]. Always be accurate. If it looks like a vehicle or an unrelated object, respond with 'Type: Unknown' and mark as not recyclable.",
+                    "prompt": "You are an AI that analyzes images to determine whether an item is recyclable. Be very specific about material type. For example, say 'Stainless Steel' not just 'Metal'. Respond in a structured format:\nType: [material]\nEstimated Value: ₹[amount]\nReason: [why or why not it's recyclable]. Always be accurate. If it looks like a vehicle or unrelated object, respond with 'Type: Unknown' and mark as not recyclable.",
                     "images": [image_data],
                     "stream": True
                 },
