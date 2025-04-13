@@ -151,4 +151,9 @@
       background-position: center center;
     }
   }
+  .flash.pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+  }
   

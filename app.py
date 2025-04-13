@@ -498,13 +498,18 @@ def admin_dashboard():
     centers = list(db.recyclingCenters.find())
     items = list(db.items.find()) if 'items' in db.list_collection_names() else []
     transactions = list(db.transactions.find()) if 'transactions' in db.list_collection_names() else []
+
+    pending_centers = db.center_logins.count_documents({"verified": False})
+
     stats = {
         "total_users": len(users),
         "total_centers": len(centers),
         "total_items": len(items),
-        "total_transactions": len(transactions)
+        "total_transactions": len(transactions),
+        "pending_centers": pending_centers
     }
     return render_template('admin_dashboard.html', stats=stats)
+
 
 @app.route('/admin/users')
 @admin_required
@@ -860,24 +865,16 @@ def request_connection(item_id):
 
 @app.route('/center/login', methods=['GET', 'POST'])
 def center_login():
-    test_email = "greenit@example.com"
-    if not db.center_logins.find_one({"email": test_email}):
-        test_center = db.recyclingCenters.find_one({"name": {"$regex": "green", "$options": "i"}})
-        if test_center:
-            db.center_logins.insert_one({
-                "email": test_email,
-                "password": bcrypt.hashpw("center123".encode('utf-8'), bcrypt.gensalt()),
-                "centerId": test_center["_id"],
-                "name": test_center["name"],
-                "role": "center"
-            })
-
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
 
         center = db.center_logins.find_one({"email": email})
         if center and bcrypt.checkpw(password.encode('utf-8'), center['password']):
+            if not center.get("verified"):
+                flash("Your account is pending admin verification.", "error")
+                return redirect(url_for('center_login'))
+
             session.clear()
             session['center_id'] = str(center['centerId'])
             session['center_name'] = center['name']
@@ -888,6 +885,7 @@ def center_login():
         return redirect(url_for('center_login'))
 
     return render_template("center_login.html")
+
 
 @app.route('/center/signup', methods=['GET', 'POST'])
 def center_signup():
@@ -915,36 +913,71 @@ def center_signup():
             "image": None
         }).inserted_id
 
-        # Create login entry
+        # Create login entry, mark as not verified
         db.center_logins.insert_one({
             "email": email,
             "password": bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
             "centerId": center_id,
             "name": name,
+            "verified": False,
             "role": "center"
         })
 
-        session.clear()
-        session['center_id'] = str(center_id)
-        session['center_name'] = name
-        flash("Center account created successfully!", "success")
-        return redirect(url_for('center_dashboard'))
+        flash("Signup successful! Your request will be reviewed by an admin.", "success")
+        return redirect(url_for('center_login'))
 
     return render_template("center_signup.html")
+
 
 
 
 @app.route('/center/dashboard')
 def center_dashboard():
     if 'center_id' not in session:
-        flash("Please log in as a center.")
+        flash("Please log in as a center.", "error")
         return redirect(url_for('center_login'))
 
-    center_name = session.get('center_name', 'Center')
-    return Markup(f"<h2>Welcome, <b>{center_name}</b></h2><p>Your center dashboard will appear here.</p>")
+    center_id = session['center_id']
+    center_items = db.items.find({
+        "centerId": center_id,
+        "status": "Connection Requested"
+    })
+
+    items = []
+    for item in center_items:
+        user = db.users.find_one({"_id": ObjectId(item['userId'])})
+        items.append({
+            "_id": str(item["_id"]),
+            "material_type": item.get("material_type", "Unknown"),
+            "estimated_value": item.get("estimated_value", "0"),
+            "reason": item.get("reason", ""),
+            "image_path": item.get("image_path", None),
+            "user_name": user['name'] if user else "Unknown",
+            "user_id": str(user['_id']) if user else ""
+        })
+
+    return render_template("center_dashboard.html", items=items)
+
+#admin verification
+@app.route('/admin/verify_centers')
+@admin_required
+def admin_verify_centers():
+    pending_centers = list(db.center_logins.find({"verified": False}))
+    for center in pending_centers:
+        center['_id'] = str(center['_id'])
+    return render_template('admin_verify_centers.html', centers=pending_centers)
+
+@app.route('/admin/verify_center/<center_id>', methods=['POST'])
+@admin_required
+def verify_center(center_id):
+    db.center_logins.update_one({"_id": ObjectId(center_id)}, {"$set": {"verified": True}})
+    flash("Center verified successfully!", "success")
+    return redirect(url_for('admin_verify_centers'))
 
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
     app.run(debug=True)
+
+# ollama run llava

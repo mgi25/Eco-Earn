@@ -1,0 +1,94 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f2f5f7;
+    color: #1c3d28;
+  }
+  
+  .admin-navbar {
+    background-color: #2a9d8f;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  
+  .nav-links a:hover {
+    opacity: 0.85;
+  }
+  
+  .verify-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  .page-heading {
+    font-size: 2rem;
+    text-align: center;
+    color: #204e34;
+    margin-bottom: 2rem;
+  }
+  
+  .center-box {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .center-box h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    color: #2a9d8f;
+  }
+  
+  .center-box p {
+    margin: 0.3rem 0;
+    font-size: 14px;
+  }
+  
+  .verify-btn {
+    margin-top: 1rem;
+    padding: 10px 20px;
+    background-color: #2d4b1f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .verify-btn:hover {
+    background-color: #1f3414;
+  }
+  
+  .helper-text {
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+  }
+  

@@ -1,0 +1,119 @@
+/* Full-screen eco background */
+body {
+    margin: 0;
+    padding: 0;
+    background: url("../images/forest.jpg") center center / cover no-repeat;
+    font-family: "Segoe UI", sans-serif;
+    color: #fff;
+  }
+  
+  /* Semi-dark overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+  }
+  
+  /* Navbar */
+  .navbar {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  .nav-links li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .nav-links li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Container & Heading */
+  .container {
+    padding: 40px;
+  }
+  .page-heading {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  /* Table */
+  .table-wrapper {
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+  .item-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .item-table th,
+  .item-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    text-align: left;
+  }
+  .item-table th {
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 16px;
+  }
+  .item-table img {
+    border-radius: 8px;
+    max-width: 80px;
+    height: auto;
+  }
+  
+  /* Buttons */
+  .btn {
+    background-color: #2d4b1f;
+    color: #fff;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+  .btn:hover {
+    background-color: #1f3414;
+  }
+  
+  /* Flash messages */
+  .flash-messages {
+    margin-bottom: 20px;
+  }
+  .flash-messages p {
+    background-color: #f2dede;
+    color: #a94442;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+  }
+  .pending-box {
+    border-left: 6px solid #e76f51;
+  }
+  .pending-box h3 {
+    color: #e76f51;
+  }
+  

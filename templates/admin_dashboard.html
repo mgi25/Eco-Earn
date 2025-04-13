@@ -12,6 +12,7 @@
       <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
       <li><a href="{{ url_for('admin_users') }}">Users</a></li>
       <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('admin_verify_centers') }}">Verify Centers</a></li>
       <li><a href="{{ url_for('admin_items') }}">Items</a></li>
       <li><a href="{{ url_for('admin_transactions') }}">Transactions</a></li>
       <li><a href="{{ url_for('admin_announcements') }}">Announcements</a></li>
@@ -38,7 +39,12 @@
         <h3>Total Transactions</h3>
         <p>{{ stats.total_transactions }}</p>
       </div>
+      <div class="stat-box pending-box">
+        <h3>Pending Center Requests</h3>
+        <p>{{ stats.pending_centers }}</p>
+      </div>
     </div>
+    
     <p class="helper-text">Use the navigation above to manage different sections.</p>
   </main>
 </body>

@@ -1,0 +1,38 @@
+<!-- verify_centers.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Centers | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_verify_centers.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_verify_centers') }}">Verify Centers</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="verify-container">
+    <h1 class="page-heading">Pending Center Verifications</h1>
+    {% if centers %}
+      {% for center in centers %}
+        <div class="center-box">
+          <h3>{{ center.name }}</h3>
+          <p><strong>Email:</strong> {{ center.email }}</p>
+          <p><strong>Phone:</strong> {{ center.phone }}</p>
+          <p><strong>Organization:</strong> {{ center.organization }}</p>
+          <form method="POST" action="{{ url_for('verify_center', center_id=center._id) }}">
+            <button class="verify-btn" type="submit">Approve Center</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="helper-text">No centers pending verification.</p>
+    {% endif %}
+  </main>
+</body>
+</html>
