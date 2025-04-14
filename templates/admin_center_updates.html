@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Center Update Requests | EcoEarn Admin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_center_updates.css') }}">
+</head>
+<body>
+  <nav class="navbar admin-navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links nav-admin">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_verify_centers') }}">Verify Centers</a></li>
+      <li><a href="{{ url_for('admin_center_updates') }}">Update Requests</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1 class="page-heading">Pending Center Update Requests</h1>
+
+    {% if updates %}
+      {% for update in updates %}
+        <div class="center-update-card">
+          <h2>{{ update.old.name }}</h2>
+          <div class="card-content">
+            <div class="old-details">
+              <h4>Old Details</h4>
+              <p><strong>Address:</strong> {{ update.old.address or "N/A" }}</p>
+              <p><strong>Accepted Items:</strong> {{ update.old.acceptedItems | join(", ") if update.old.acceptedItems else "N/A" }}</p>
+            </div>
+            <div class="new-details">
+              <h4>New Details</h4>
+              <p><strong>Address:</strong> {{ update.new.address or "N/A" }}</p>
+              <p><strong>Accepted Items:</strong> {{ update.new.acceptedItems | join(", ") if update.new.acceptedItems else "N/A" }}</p>
+              {% if update.new.location and update.new.location.coordinates %}
+              <p><strong>Location:</strong>
+                {{ update.new.location.coordinates[1] }},
+                {{ update.new.location.coordinates[0] }}
+              </p>
+              {% else %}
+              <p><strong>Location:</strong> N/A</p>
+              {% endif %}
+            </div>
+            {% if update.new.image %}
+            <div class="update-image">
+              <img src="{{ url_for('static', filename=update.new.image) }}" alt="New Center Image">
+            </div>
+            {% endif %}
+          </div>
+          <div class="action-buttons">
+            <form method="POST" action="{{ url_for('approve_center_update', req_id=update._id) }}">
+              <button type="submit" class="btn green">Approve</button>
+            </form>
+            <form method="POST" action="{{ url_for('reject_center_update', req_id=update._id) }}">
+              <button type="submit" class="btn red">Reject</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-data">No pending update requests at the moment.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

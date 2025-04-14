@@ -25,9 +25,15 @@
           <p><strong>Email:</strong> {{ center.email }}</p>
           <p><strong>Phone:</strong> {{ center.phone }}</p>
           <p><strong>Organization:</strong> {{ center.organization }}</p>
-          <form method="POST" action="{{ url_for('verify_center', center_id=center._id) }}">
-            <button class="verify-btn" type="submit">Approve Center</button>
+          
+          <form method="POST" action="{{ url_for('approve_center', center_id=center._id) }}">
+            <button type="submit" class="btn green">Approve Center</button>
           </form>
+          
+          <form method="POST" action="{{ url_for('reject_center', center_id=center._id) }}">
+            <button type="submit" class="btn red">Reject</button>
+          </form>
+          
         </div>
       {% endfor %}
     {% else %}

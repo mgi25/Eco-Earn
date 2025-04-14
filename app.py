@@ -499,15 +499,24 @@ def admin_dashboard():
     items = list(db.items.find()) if 'items' in db.list_collection_names() else []
     transactions = list(db.transactions.find()) if 'transactions' in db.list_collection_names() else []
 
-    pending_centers = db.center_logins.count_documents({"verified": False})
+    # ✅ Fix: count both missing "verified" and explicitly False
+    pending_centers = db.center_logins.count_documents({
+        "$or": [
+            {"verified": False},
+            {"verified": {"$exists": False}}
+        ],
+        "status": {"$ne": "Rejected"}
+    })
 
     stats = {
         "total_users": len(users),
         "total_centers": len(centers),
         "total_items": len(items),
         "total_transactions": len(transactions),
-        "pending_centers": pending_centers
+        "pending_centers": pending_centers,
+        "pending_updates": db.center_update_requests.count_documents({"status": "Pending"})
     }
+
     return render_template('admin_dashboard.html', stats=stats)
 
 
@@ -870,21 +879,24 @@ def center_login():
         password = request.form.get('password')
 
         center = db.center_logins.find_one({"email": email})
-        if center and bcrypt.checkpw(password.encode('utf-8'), center['password']):
-            if not center.get("verified"):
-                flash("Your account is pending admin verification.", "error")
+        if center:
+            if center.get("status") == "Rejected":
+                flash("❌ Your signup request was rejected by admin.", "error")
                 return redirect(url_for('center_login'))
 
-            session.clear()
-            session['center_id'] = str(center['centerId'])
-            session['center_name'] = center['name']
-            flash("Center login successful!", "success")
-            return redirect(url_for('center_dashboard'))
+            if not center.get("verified"):
+                flash("⏳ Your account is pending admin approval.", "warning")
+                return redirect(url_for('center_login'))
 
-        flash("Invalid center login credentials!", "error")
+            if bcrypt.checkpw(password.encode('utf-8'), center['password']):
+                session['center_id'] = str(center['centerId'])
+                session['center_name'] = center['name']
+                return redirect(url_for('center_dashboard'))
+
+        flash("Invalid login credentials.", "error")
         return redirect(url_for('center_login'))
 
-    return render_template("center_login.html")
+    return render_template('center_login.html')
 
 
 @app.route('/center/signup', methods=['GET', 'POST'])
@@ -904,7 +916,8 @@ def center_signup():
             flash("Center with this email already exists.", "error")
             return redirect(url_for('center_signup'))
 
-        # Create recycling center entry
+        hashed_pw = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
         center_id = db.recyclingCenters.insert_one({
             "name": name,
             "address": "",
@@ -913,66 +926,195 @@ def center_signup():
             "image": None
         }).inserted_id
 
-        # Create login entry, mark as not verified
         db.center_logins.insert_one({
             "email": email,
-            "password": bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()),
+            "password": hashed_pw,
             "centerId": center_id,
             "name": name,
             "verified": False,
-            "role": "center"
+            "status": "Pending"
         })
 
-        flash("Signup successful! Your request will be reviewed by an admin.", "success")
+        flash("Signup successful! Your request has been sent for admin approval.", "info")
         return redirect(url_for('center_login'))
 
     return render_template("center_signup.html")
 
-
+def center_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'center_id' not in session:
+            flash("Please log in as a center to access that page.", "warning")
+            return redirect(url_for('center_login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/center/dashboard')
+@center_required
 def center_dashboard():
-    if 'center_id' not in session:
-        flash("Please log in as a center.", "error")
-        return redirect(url_for('center_login'))
-
     center_id = session['center_id']
-    center_items = db.items.find({
-        "centerId": center_id,
-        "status": "Connection Requested"
-    })
+    center = db.recyclingCenters.find_one({"_id": ObjectId(center_id)})
 
-    items = []
-    for item in center_items:
-        user = db.users.find_one({"_id": ObjectId(item['userId'])})
-        items.append({
-            "_id": str(item["_id"]),
-            "material_type": item.get("material_type", "Unknown"),
-            "estimated_value": item.get("estimated_value", "0"),
-            "reason": item.get("reason", ""),
-            "image_path": item.get("image_path", None),
-            "user_name": user['name'] if user else "Unknown",
-            "user_id": str(user['_id']) if user else ""
-        })
+    total_items = db.connected_items.count_documents({"centerId": ObjectId(center_id)})
+    approved_items = db.connected_items.count_documents({"centerId": ObjectId(center_id), "status": "Approved"})
+    pending_items = db.connected_items.count_documents({"centerId": ObjectId(center_id), "status": "Pending"})
 
-    return render_template("center_dashboard.html", items=items)
+    return render_template(
+        'center_dashboard.html',
+        center=center,
+        total_items=total_items,
+        approved_items=approved_items,
+        pending_items=pending_items
+    )
+
 
 #admin verification
 @app.route('/admin/verify_centers')
 @admin_required
 def admin_verify_centers():
-    pending_centers = list(db.center_logins.find({"verified": False}))
-    for center in pending_centers:
+    centers = list(db.center_logins.find({
+        "$or": [
+            {"verified": False},
+            {"verified": {"$exists": False}}
+        ],
+        "status": {"$ne": "Rejected"}
+    }))
+    for center in centers:
         center['_id'] = str(center['_id'])
-    return render_template('admin_verify_centers.html', centers=pending_centers)
+    return render_template('admin_verify_centers.html', centers=centers)
+
+
 
 @app.route('/admin/verify_center/<center_id>', methods=['POST'])
 @admin_required
-def verify_center(center_id):
-    db.center_logins.update_one({"_id": ObjectId(center_id)}, {"$set": {"verified": True}})
-    flash("Center verified successfully!", "success")
+def approve_center(center_id):
+    db.center_logins.update_one(
+        {"_id": ObjectId(center_id)},
+        {"$set": {"verified": True, "status": "Approved"}}
+    )
+    flash("Center approved successfully!", "success")
     return redirect(url_for('admin_verify_centers'))
+
+
+
+@app.route('/admin/reject_center/<center_id>', methods=['POST'])
+@admin_required
+def reject_center(center_id):
+    db.center_logins.update_one(
+        {"_id": ObjectId(center_id)},
+        {"$set": {"status": "Rejected"}}
+    )
+    flash("Center rejected.", "info")
+    return redirect(url_for('admin_verify_centers'))
+
+
+@app.route('/center/update_profile', methods=['GET', 'POST'])
+def update_center_profile():
+    if 'center_id' not in session:
+        flash("Please log in as a center.")
+        return redirect(url_for('center_login'))
+
+    center_id = session['center_id']
+    center_obj = db.recyclingCenters.find_one({"_id": ObjectId(center_id)})
+
+    if request.method == 'POST':
+        name = request.form.get("name")
+        address = request.form.get("address")
+        accepted_items = request.form.get("accepted_items")
+        location_type = request.form.get("location_type")
+        location = None
+
+        if location_type == "live":
+            coords = request.form.get("location").split(",")
+            if len(coords) == 2:
+                location = {"type": "Point", "coordinates": [float(coords[1]), float(coords[0])]}
+        elif location_type == "custom":
+            lat = request.form.get("latitude")
+            lon = request.form.get("longitude")
+            if lat and lon:
+                location = {"type": "Point", "coordinates": [float(lon), float(lat)]}
+
+        # Handle image
+        image_file = request.files.get("image")
+        image_path = center_obj.get("image")
+        if image_file and image_file.filename != "":
+            filename = secure_filename(image_file.filename)
+            image_path = "uploads/" + filename
+            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        update_request = {
+            "centerId": ObjectId(center_id),
+            "updated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "new_data": {
+                "name": name,
+                "address": address,
+                "acceptedItems": [i.strip() for i in accepted_items.split(",")],
+                "image": image_path,
+                "location": location
+            },
+            "status": "Pending"
+        }
+
+        db.center_update_requests.update_one(
+            {"centerId": ObjectId(center_id)},
+            {"$set": update_request},
+            upsert=True
+        )
+
+        flash("Your update request has been submitted and is pending admin approval.", "success")
+        return redirect(url_for('update_center_profile'))
+
+    # Check for rejection status
+    request_doc = db.center_update_requests.find_one({"centerId": ObjectId(center_id)})
+    if request_doc and request_doc.get("status") == "Rejected":
+        flash("⚠️ Your last update request was rejected. Please submit again.", "danger")
+
+    # Render form
+    center_data = {
+        "name": center_obj.get("name", ""),
+        "address": center_obj.get("address", ""),
+        "accepted_items": ", ".join(center_obj.get("acceptedItems", [])),
+        "location": center_obj.get("location", "")
+    }
+    return render_template("update_profile.html", center=center_data)
+
+@app.route('/admin/center_updates')
+@admin_required
+def admin_center_updates():
+    requests = list(db.center_update_requests.find({"status": "Pending"}))
+    updates = []
+    for req in requests:
+        center = db.recyclingCenters.find_one({"_id": req["centerId"]})
+        updates.append({
+            "_id": str(req["_id"]),
+            "centerId": str(req["centerId"]),
+            "old": center,
+            "new": req["new_data"]
+        })
+    return render_template("admin_center_updates.html", updates=updates)
+
+
+@app.route('/admin/center_updates/approve/<req_id>', methods=['POST'])
+@admin_required
+def approve_center_update(req_id):
+    request_doc = db.center_update_requests.find_one({"_id": ObjectId(req_id)})
+    if request_doc:
+        db.recyclingCenters.update_one(
+            {"_id": request_doc["centerId"]},
+            {"$set": request_doc["new_data"]}
+        )
+        db.center_update_requests.delete_one({"_id": ObjectId(req_id)})
+        flash("Center profile update approved.", "success")
+    return redirect(url_for('admin_center_updates'))
+
+
+@app.route('/admin/center_updates/reject/<req_id>', methods=['POST'])
+@admin_required
+def reject_center_update(req_id):
+    db.center_update_requests.delete_one({"_id": ObjectId(req_id)})
+    flash("Center profile update rejected.", "info")
+    return redirect(url_for('admin_center_updates'))
 
 
 if __name__ == '__main__':

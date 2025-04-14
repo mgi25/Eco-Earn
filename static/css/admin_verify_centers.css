@@ -91,4 +91,33 @@ body {
     font-size: 16px;
     color: #777;
   }
+  .btn.red {
+    background-color: #e74c3c;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  
+  .btn.red:hover {
+    background-color: #c0392b;
+  }
+  .btn.green {
+    background-color: #2d4b1f;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  
+  .btn.green:hover {
+    background-color: #1f3414;
+  }
+  
   

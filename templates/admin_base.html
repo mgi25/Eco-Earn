@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard | EcoEarn</title>
+  <title>{% block title %}EcoEarn Admin{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
+  <!-- Admin Navigation -->
   <nav class="navbar admin-navbar">
     <div class="nav-logo">EcoEarn Admin</div>
     <ul class="nav-links nav-admin">
@@ -22,35 +24,15 @@
   </nav>
 
   <main class="container">
-    <h1 class="page-heading">Admin Dashboard</h1>
-    <div class="stats-grid">
-      <div class="stat-box">
-        <h3>Total Users</h3>
-        <p>{{ stats.total_users }}</p>
-      </div>
-      <div class="stat-box">
-        <h3>Total Centers</h3>
-        <p>{{ stats.total_centers }}</p>
-      </div>
-      <div class="stat-box">
-        <h3>Total Items</h3>
-        <p>{{ stats.total_items }}</p>
-      </div>
-      <div class="stat-box">
-        <h3>Total Transactions</h3>
-        <p>{{ stats.total_transactions }}</p>
-      </div>
-      <div class="stat-box pending-box">
-        <h3>Pending Center Requests</h3>
-        <p>{{ stats.pending_centers }}</p>
-      </div>
-      <div class="stat-box pending-box">
-        <h3>Pending Update Requests</h3>
-        <p>{{ stats.pending_updates }}</p>
-      </div>
-    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-    <p class="helper-text">Use the navigation above to manage different sections.</p>
+    {% block content %}{% endblock %}
   </main>
 </body>
 </html>

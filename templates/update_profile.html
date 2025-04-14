@@ -1,0 +1,75 @@
+<!-- update_profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Center Profile | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/center_profile.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn Center</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('center_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1 class="page-heading">Update Center Profile</h1>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('update_center_profile') }}" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="center_name">Center Name:</label>
+        <input type="text" name="name" id="center_name" required value="{{ center.name }}">
+      </div>
+
+      <div class="form-group">
+        <label for="center_address">Address:</label>
+        <textarea name="address" id="center_address" required>{{ center.address }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="accepted_items">Accepted Materials (comma-separated):</label>
+        <input type="text" name="accepted_items" id="accepted_items" required value="{{ center.accepted_items }}">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Upload Center Image:</label>
+        <input type="file" name="image" id="image" accept="image/*">
+      </div>
+
+      <div class="form-group location-section">
+        <label>Choose Location Type:</label>
+        <div class="location-choice">
+          <label><input type="radio" name="location_type" value="live" id="live-location" checked> Live</label>
+          <label><input type="radio" name="location_type" value="custom" id="custom-location"> Custom</label>
+        </div>
+
+        <div id="custom-fields">
+          <label for="latitude">Latitude:</label>
+          <input type="text" name="latitude" id="latitude">
+          <label for="longitude">Longitude:</label>
+          <input type="text" name="longitude" id="longitude">
+        </div>
+
+        <input type="hidden" name="location" id="location">
+      </div>
+
+      <button type="submit" class="submit-btn">Submit Update Request</button>
+    </form>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/center_profile.js') }}"></script>
+</body>
+</html>

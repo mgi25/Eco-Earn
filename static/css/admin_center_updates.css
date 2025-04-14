@@ -1,0 +1,131 @@
+/* ==============================
+   ADMIN CENTER UPDATES STYLES
+============================== */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f4f8;
+    color: #1c3d28;
+  }
+  
+  .admin-navbar {
+    background-color: #2a9d8f;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: opacity 0.2s;
+  }
+  
+  .nav-links a:hover {
+    opacity: 0.8;
+  }
+  
+  .container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+  
+  .page-heading {
+    font-size: 2.2rem;
+    text-align: center;
+    color: #1c3d28;
+    margin-bottom: 2rem;
+  }
+  
+  .center-update-card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+  }
+  
+  .center-update-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    color: #2a9d8f;
+  }
+  
+  .card-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .old-details, .new-details {
+    flex: 1;
+  }
+  
+  .old-details h4,
+  .new-details h4 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .old-details p,
+  .new-details p {
+    font-size: 0.95rem;
+    margin: 0.25rem 0;
+  }
+  
+  .update-image img {
+    max-width: 150px;
+    border-radius: 8px;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .btn.green {
+    background-color: #2d4b1f;
+  }
+  
+  .btn.green:hover {
+    background-color: #1f3414;
+  }
+  
+  .btn.red {
+    background-color: #e74c3c;
+  }
+  
+  .btn.red:hover {
+    background-color: #c0392b;
+  }
+  
+  .no-data {
+    text-align: center;
+    color: #555;
+    margin-top: 2rem;
+    font-size: 1.1rem;
+  }
+      

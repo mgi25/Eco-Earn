@@ -3,113 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Center Dashboard | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
-  <style>
-    .dashboard-card {
-      max-width: 1000px;
-      margin-top: 40px;
-      padding: 30px;
-      text-align: left;
-    }
-
-    .dashboard-card h2 {
-      color: #fff;
-      margin-bottom: 20px;
-      font-size: 28px;
-      text-align: center;
-    }
-
-    .dashboard-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    .dashboard-table th, .dashboard-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-    }
-
-    .dashboard-table th {
-      background-color: rgba(0, 0, 0, 0.4);
-      font-weight: 600;
-    }
-
-    .dashboard-table img {
-      max-width: 80px;
-      border-radius: 6px;
-    }
-
-    .action-btn {
-      background-color: #2d4b1f;
-      color: #fff;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background-color 0.2s ease;
-    }
-
-    .action-btn:hover {
-      background-color: #1f3414;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/center_dashboard.css') }}">
 </head>
 <body>
-  <div class="auth-background">
-    <div class="auth-overlay"></div>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn Center</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('center_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('update_center_profile') }}">Update Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
 
-    <div class="auth-card dashboard-card">
-      <h2>Pending Item Requests</h2>
+  <main class="dashboard-container">
+    <h1 class="dashboard-heading">Welcome, {{ center.name }}</h1>
 
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="flash-messages">
-            {% for msg in messages %}
-              <p>{{ msg }}</p>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
+    {% if flash_message %}
+      <div class="flash-message">{{ flash_message }}</div>
+    {% endif %}
 
-      {% if items %}
-      <table class="dashboard-table">
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Type</th>
-            <th>Value</th>
-            <th>Image</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in items %}
-          <tr>
-            <td>{{ item.user_name }}</td>
-            <td>{{ item.material_type }}</td>
-            <td>₹{{ item.estimated_value }}</td>
-            <td>
-              {% if item.image_path %}
-                <img src="{{ url_for('static', filename=item.image_path) }}">
-              {% else %}
-                No image
-              {% endif %}
-            </td>
-            <td>
-              <a class="action-btn" href="{{ url_for('center_edit_item', item_id=item._id) }}">Review</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-        <p style="color: #fff;">No requests pending at the moment.</p>
-      {% endif %}
+    <div class="stats-grid">
+      <div class="stat-box">
+        <h3>Total Connected Items</h3>
+        <p>{{ total_items }}</p>
+      </div>
+      <div class="stat-box">
+        <h3>Approved Items</h3>
+        <p>{{ approved_items }}</p>
+      </div>
+      <div class="stat-box">
+        <h3>Pending Approvals</h3>
+        <p>{{ pending_items }}</p>
+      </div>
     </div>
-  </div>
+
+    <div class="action-section">
+      <a href="{{ url_for('update_center_profile') }}" class="action-btn">Edit Profile</a>
+    </div>
+  </main>
 </body>
 </html>
