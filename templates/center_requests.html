@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Requests | EcoEarn Center</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/center_requests.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn Center</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('center_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('update_center_profile') }}">Update Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <h2 class="page-heading">Incoming Item Requests</h2>
+
+    {% for req in requests %}
+    <div class="container">
+      <p><strong>User ID:</strong> {{ req.userId }}</p>
+
+      {% if req.item and req.item.image_path %}
+        <img src="{{ url_for('static', filename=req.item.image_path) }}" alt="Item Image" class="item-image">
+      {% endif %}
+
+      <form action="{{ url_for('update_connection_status', req_id=req._id) }}" method="POST">
+        <input type="hidden" name="itemId" value="{{ req.item._id }}">
+
+        <div class="form-group">
+          <label>Material Type:</label>
+          <input type="text" name="material_type" value="{{ req.material_type }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Estimated Value (₹):</label>
+          <input type="number" name="estimated_value" value="{{ req.estimated_value }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Feedback:</label>
+          <input type="text" name="feedback" placeholder="Optional feedback" value="{{ req.feedback if req.feedback else '' }}">
+        </div>
+
+        <div class="form-group">
+          <label>Status:</label>
+          <select name="status">
+            <option value="Pending" {% if req.status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Approved" {% if req.status == 'Approved' %}selected{% endif %}>Approved</option>
+            <option value="Rejected" {% if req.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+          </select>
+        </div>
+
+        <button type="submit" class="submit-btn">Save & Update</button>
+      </form>
+    </div>
+    {% endfor %}
+
+    {% if not requests %}
+    <p class="no-requests">No item requests found.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

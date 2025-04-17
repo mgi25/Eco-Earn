@@ -2,33 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Nearby Centers | EcoEarn</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/nearby_centers.css') }}">
+  <title>Connect to Centers | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/connect_centers.css') }}">
 </head>
 <body>
+
   <nav class="navbar">
-    <div class="nav-logo">EcoEarn</div>
+    <div class="nav-logo">EcoEarn Center</div>
     <ul class="nav-links">
       <li><a href="{{ url_for('home') }}">Home</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
 
-  <main class="container">
-    <h1 class="page-heading">Centers Near You</h1>
+  <div class="page-container">
+    <h2 class="page-heading">Centers Near You</h2>
+    <p style="text-align: center;">Select the centers you want to send this item to.</p>
 
     {% for center in centers %}
-      <div class="center-card">
-        <h2>{{ center.name }}</h2>
+    <div class="center-card">
+      <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image">
+      <div class="center-info">
+        <h3>{{ center.name }}</h3>
         <p>{{ center.address }}</p>
-        {% if center.acceptedItems %}
-          <p><strong>Accepted Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
-        {% endif %}
-        {% if center.image %}
-          <img src="{{ url_for('static', filename=center.image) }}" alt="Center Image">
-        {% endif %}
+        <p><strong>Preferred Items:</strong> {{ center.acceptedItems | join(', ') }}</p>
+        <form action="{{ url_for('send_connection_request', item_id=item_id, center_id=center._id) }}" method="POST">
+          <button type="submit" class="send-btn">Send Request to This Center</button>
+        </form>
       </div>
+    </div>
     {% endfor %}
-  </main>
+  </div>
 </body>
 </html>

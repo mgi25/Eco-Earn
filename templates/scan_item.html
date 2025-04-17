@@ -74,15 +74,30 @@
     {% if session.get('connect_item_id') %}
     <div class="connection-box">
       <h3>🌍 Connect to Nearby Recycling Center</h3>
-      <p>We've identified this item as recyclable. Ready to find the closest center?</p>
-      <button onclick="connectToNearest('{{ session['connect_item_id'] }}')" class="btn btn-connect">
-        Yes, Find Nearest Center
+      <p>This item is recyclable. Find centers near your location and send a request.</p>
+      <button onclick="redirectToNearbyCenters('{{ session['connect_item_id'] }}')" class="btn btn-connect">
+        Yes, Show Nearby Centers
       </button>
     </div>
     {% endif %}
-
   </div>
 
   <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+  <script>
+    function redirectToNearbyCenters(itemId) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const url = `/connect_centers/${itemId}?lat=${lat}&lon=${lon}`;
+          window.location.href = url;
+        }, err => {
+          alert("❌ Failed to get your location: " + err.message);
+        });
+      } else {
+        alert("❌ Geolocation is not supported by your browser.");
+      }
+    }
+  </script>
 </body>
 </html>

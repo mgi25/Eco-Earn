@@ -1116,6 +1116,143 @@ def reject_center_update(req_id):
     flash("Center profile update rejected.", "info")
     return redirect(url_for('admin_center_updates'))
 
+@app.route('/connect_centers/<item_id>')
+def connect_centers(item_id):
+    if 'user_id' not in session:
+        flash("Please log in.")
+        return redirect(url_for('login'))
+
+    item = db.items.find_one({"_id": ObjectId(item_id)})
+    if not item:
+        flash("Item not found.")
+        return redirect(url_for('scan_item'))
+
+    user_lat = request.args.get('lat')
+    user_lon = request.args.get('lon')
+
+    if not user_lat or not user_lon:
+        flash("Location missing.")
+        return redirect(url_for('scan_item'))
+
+    try:
+        lat = float(user_lat)
+        lon = float(user_lon)
+    except:
+        flash("Invalid coordinates.")
+        return redirect(url_for('scan_item'))
+
+    # Just get all centers within 50km, don't filter by item type
+    pipeline = [
+        {
+            "$geoNear": {
+                "near": {"type": "Point", "coordinates": [lon, lat]},
+                "distanceField": "distance",
+                "maxDistance": 50000,
+                "spherical": True
+            }
+        }
+    ]
+    centers = list(db.recyclingCenters.aggregate(pipeline))
+    for center in centers:
+        center['_id'] = str(center['_id'])
+    return render_template("nearby_centers.html", centers=centers, item_id=item_id)
+
+@app.route('/send_connection/<item_id>/<center_id>', methods=['POST'])
+def send_connection_request(item_id, center_id):
+    if 'user_id' not in session:
+        flash("Please log in.")
+        return redirect(url_for('login'))
+
+    item = db.items.find_one({"_id": ObjectId(item_id)})
+    if not item:
+        flash("Item not found.")
+        return redirect(url_for('scan_item'))
+
+    # Prevent duplicate requests
+    exists = db.connected_items.find_one({
+        "itemId": ObjectId(item_id),
+        "centerId": ObjectId(center_id)
+    })
+    if exists:
+        flash("Request already sent to this center.")
+        return redirect(url_for('my_items'))
+
+    db.connected_items.insert_one({
+        "itemId": ObjectId(item_id),
+        "centerId": ObjectId(center_id),
+        "userId": session['user_id'],
+        "material_type": item.get("material_type", ""),
+        "estimated_value": item.get("estimated_value", ""),
+        "status": "Pending",
+        "timestamp": time.strftime("%Y-%m-%d")
+    })
+
+    flash("Request sent successfully!")
+    return redirect(url_for('my_items'))
+
+@app.route('/center/requests')
+@center_required
+def center_requests():
+    center_id = session['center_id']
+
+    # 🔥 Only fetch requests that are assigned to this center AND are still pending
+    requests = list(db.connected_items.find({
+        "centerId": ObjectId(center_id),
+        "status": "Pending"
+    }))
+
+    # Attach item info for display
+    for req in requests:
+        item = db.items.find_one({"_id": req["itemId"]})
+        req["item"] = item
+
+    return render_template('center_requests.html', requests=requests)
+
+
+
+@app.route('/update_connection_status/<req_id>', methods=['POST'])
+@center_required
+def update_connection_status(req_id):
+    status = request.form.get('status')
+    feedback = request.form.get('feedback')
+    material_type = request.form.get('material_type')
+    estimated_value = float(request.form.get('estimated_value'))
+    item_id = ObjectId(request.form.get('itemId'))
+
+    # Update the connected_items document
+    db.connected_items.update_one(
+        {"_id": ObjectId(req_id)},
+        {"$set": {
+            "status": status,
+            "material_type": material_type,
+            "estimated_value": estimated_value,
+            "feedback": feedback
+        }}
+    )
+
+    # Update the item document too
+    db.items.update_one(
+        {"_id": item_id},
+        {"$set": {
+            "status": status,
+            "material_type": material_type,
+            "estimated_value": estimated_value,
+            "center_feedback": feedback
+        }}
+    )
+
+    # If approved, add rewards to user account
+    if status == "Approved":
+        connected = db.connected_items.find_one({"_id": ObjectId(req_id)})
+        user_id = connected['userId']
+        db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"rewards": estimated_value}}
+        )
+
+    flash(f"✅ Request updated and marked as {status}.")
+    return redirect(url_for('center_requests'))
+
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
