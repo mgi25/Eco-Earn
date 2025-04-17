@@ -63,10 +63,10 @@
               <h3>Impact</h3>
               <p>You saved 
                 {% if user.items_recycled is defined %}
-                  {{ (user.items_recycled * 0.1)|round(0) }}
+                {{ (user.items_recycled * 0.1)|round(1) }}
                 {% else %} 0 {% endif %} trees!
               </p>
-            </div>
+            </div> 
           </div>
         </div>
       </div>

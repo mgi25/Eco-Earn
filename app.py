@@ -106,15 +106,24 @@ def home():
         return redirect(url_for('login'))
 
     if session['user_id'] == 'admin':
-        user = {"name": "Admin"}
+        user = {"name": "Admin", "rewards": 0, "items_recycled": 0}
     else:
         user = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
+        # ✅ Count items where user’s item was approved
+        recycled_count = db.connected_items.count_documents({
+            "userId": session['user_id'],
+            "status": "Approved"
+        })
+        user['items_recycled'] = recycled_count
 
     announcements = list(db.announcements.find())
     for ann in announcements:
         ann['_id'] = str(ann['_id'])
 
     return render_template('home.html', user=user, announcements=announcements)
+
+
 # AI prediction
 RECYCLABLE_KEYWORDS = [
     "plastic", "metal", "steel", "stainless", "aluminum", "can", "bottle",
@@ -1190,23 +1199,47 @@ def send_connection_request(item_id, center_id):
     flash("Request sent successfully!")
     return redirect(url_for('my_items'))
 
-@app.route('/center/requests')
+@app.route('/center/requests', methods=['GET', 'POST'])
 @center_required
 def center_requests():
-    center_id = session['center_id']
+    center_id = ObjectId(session['center_id'])
 
-    # 🔥 Only fetch requests that are assigned to this center AND are still pending
-    requests = list(db.connected_items.find({
-        "centerId": ObjectId(center_id),
-        "status": "Pending"
-    }))
+    if request.method == 'POST':
+        connection_id = request.form.get('connection_id')
+        material_type = request.form.get('material_type')
+        estimated_value = request.form.get('estimated_value')
+        status = request.form.get('status')
+        feedback = request.form.get('feedback')
 
-    # Attach item info for display
-    for req in requests:
-        item = db.items.find_one({"_id": req["itemId"]})
-        req["item"] = item
+        # Update connected_items collection
+        db.connected_items.update_one(
+            {"_id": ObjectId(connection_id)},
+            {
+                "$set": {
+                    "item.material_type": material_type,
+                    "item.estimated_value": estimated_value,
+                    "status": status,
+                    "feedback": feedback
+                }
+            }
+        )
 
-    return render_template('center_requests.html', requests=requests)
+        # Also update the original items collection status to 'Recycled' if approved
+        if status == "Approved":
+            conn = db.connected_items.find_one({"_id": ObjectId(connection_id)})
+            if conn and 'itemId' in conn:
+                db.items.update_one(
+                    {"_id": ObjectId(conn['itemId'])},
+                    {"$set": {"status": "Recycled"}}
+                )
+
+        flash("Item updated successfully.", "success")
+        return redirect(url_for('center_requests'))
+
+    # --- GET method display ---
+    connections = list(db.connected_items.find({"centerId": center_id, "status": "Pending"}))
+    return render_template("center_requests.html", requests=connections)
+
 
 
 
