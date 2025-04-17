@@ -1,0 +1,101 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5faf6;
+    color: #1c3d28;
+  }
+  
+  .navbar {
+    background-color: #2a9d8f;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+  }
+  
+  .dashboard-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  .dashboard-heading {
+    text-align: center;
+    font-size: 2rem;
+    color: #2d4b1f;
+    margin-bottom: 30px;
+  }
+  
+  .container {
+    background: #ffffff;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+  }
+  
+  .container:hover {
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  }
+  
+  .item-image {
+    width: 140px;
+    height: auto;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: block;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+    color: #2a9d8f;
+    margin-bottom: 6px;
+  }
+  
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  input[readonly] {
+    background-color: #f4f9f6;
+    cursor: not-allowed;
+  }
+  
+  .no-requests {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #777;
+    margin-top: 50px;
+  }
+  

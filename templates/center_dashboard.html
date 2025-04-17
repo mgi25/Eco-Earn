@@ -12,6 +12,8 @@
       <li><a href="{{ url_for('center_dashboard') }}">Dashboard</a></li>
       <li><a href="{{ url_for('update_center_profile') }}">Update Profile</a></li>
       <li><a href="{{ url_for('center_requests') }}">Manage Item Requests</a></li>
+      <li><a href="{{ url_for('center_approved_items') }}">Approved Items</a></li>
+
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
   </nav>
@@ -36,11 +38,6 @@
         <h3>Pending Approvals</h3>
         <p>{{ pending_items }}</p>
       </div>
-    </div>
-
-    <div class="action-section">
-      <a href="{{ url_for('update_center_profile') }}" class="action-btn">Edit Profile</a>
-      <a href="{{ url_for('center_requests') }}" class="action-btn">Manage Item Requests</a>
     </div>
   </main>
 </body>

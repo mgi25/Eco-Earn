@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Approved Items | EcoEarn Center</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/center_approved_items.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn Center</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('center_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('center_requests') }}">Manage Requests</a></li>
+      <li><a href="{{ url_for('center_approved_items') }}">Approved Items</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="dashboard-container">
+    <h1 class="dashboard-heading">✅ Approved Item History</h1>
+
+    {% if approved_data %}
+      {% for conn in approved_data %}
+      <div class="container">
+        <p><strong>User ID:</strong> {{ conn.userId }}</p>
+
+        {% if conn.item and conn.item.image_path %}
+        <img src="{{ url_for('static', filename=conn.item.image_path) }}" alt="Item Image" class="item-image">
+        {% endif %}
+
+        <div class="form-group">
+          <label>Material Type:</label>
+          <input type="text" value="{{ conn.item.material_type }}" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Estimated Value (₹):</label>
+          <input type="text" value="{{ conn.item.estimated_value }}" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Status:</label>
+          <input type="text" value="{{ conn.status }}" readonly>
+        </div>
+
+        <div class="form-group">
+          <label>Feedback:</label>
+          <input type="text" value="{{ conn.feedback if conn.feedback else 'No feedback' }}" readonly>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="no-requests">No approved items yet.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

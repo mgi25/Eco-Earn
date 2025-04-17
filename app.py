@@ -1253,6 +1253,21 @@ def update_connection_status(req_id):
     flash(f"✅ Request updated and marked as {status}.")
     return redirect(url_for('center_requests'))
 
+@app.route('/center/approved_items')
+@center_required
+def center_approved_items():
+    center_id = session['center_id']
+    
+    approved_data = list(db.connected_items.find({
+        "centerId": ObjectId(center_id),
+        "status": "Approved"
+    }))
+
+    for req in approved_data:
+        item = db.items.find_one({"_id": req["itemId"]})
+        req["item"] = item
+
+    return render_template("center_approved_items.html", approved_data=approved_data)
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
