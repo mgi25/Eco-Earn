@@ -1216,8 +1216,8 @@ def center_requests():
             {"_id": ObjectId(connection_id)},
             {
                 "$set": {
-                    "item.material_type": material_type,
-                    "item.estimated_value": estimated_value,
+                    "material_type": material_type,
+                    "estimated_value": estimated_value,
                     "status": status,
                     "feedback": feedback
                 }
@@ -1237,7 +1237,29 @@ def center_requests():
         return redirect(url_for('center_requests'))
 
     # --- GET method display ---
-    connections = list(db.connected_items.find({"centerId": center_id, "status": "Pending"}))
+    connections = list(db.connected_items.find(
+        {"centerId": center_id, "status": "Pending"},
+        {
+            "_id": 1,
+            "material_type": 1,
+            "estimated_value": 1,
+            "status": 1,
+            "feedback": 1,
+            "itemId": 1,
+            "timestamp": 1
+        }
+    ))
+
+    # Fetch corresponding item details without loading huge fields
+    for conn in connections:
+        item = db.items.find_one({"_id": conn["itemId"]}, {
+            "material_type": 1,
+            "estimated_value": 1,
+            "image_path": 1,
+            "reason": 1
+        })
+        conn["item"] = item
+
     return render_template("center_requests.html", requests=connections)
 
 
