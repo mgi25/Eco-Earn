@@ -6,47 +6,49 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-  <!-- Full-screen background with frosted card -->
-  <div class="auth-background">
-    <div class="auth-overlay"></div>
-    <div class="auth-card">
-      <h2>Create Your Account</h2>
-      <p class="subtitle">Sign up to start recycling and earning rewards</p>
-      
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="flash-messages">
-            {% for message in messages %}
-              <p>{{ message }}</p>
-            {% endfor %}
+  <div class="split-container">
+    <!-- Left Form Side -->
+    <div class="form-side">
+      <div class="form-box">
+        <h2>Get Started Now</h2>
+        <p class="subtitle">Sign up to start recycling and earning rewards</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('signup') }}" method="POST">
+          <div class="input-group">
+            <label for="name">Full Name</label>
+            <input type="text" name="name" id="name" placeholder="Your full name" required>
           </div>
-        {% endif %}
-      {% endwith %}
-      
-      <form action="{{ url_for('signup') }}" method="POST">
-        <div class="input-group">
-          <label for="name">Full Name</label>
-          <input type="text" name="name" id="name" placeholder="Your Full Name" required>
-        </div>
-        <div class="input-group">
-          <label for="email">Email Address</label>
-          <input type="email" name="email" id="email" placeholder="you@example.com" required>
-        </div>
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" name="password" id="password" placeholder="Create a password" required>
-        </div>
-        <div class="checkbox-group">
-          <input type="checkbox" name="terms" id="terms" required>
-          <label for="terms">I agree to the <a href="#">terms &amp; policy</a></label>
-        </div>
-        <button type="submit" class="auth-btn">Sign Up</button>
-      </form>
-      
-      <div class="bottom-text">
-        <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+          <div class="input-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" placeholder="you@example.com" required>
+          </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Create a password" required>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" name="terms" id="terms" required>
+            <label for="terms">I agree to the <a href="#">terms &amp; policy</a></label>
+          </div>
+          <button type="submit" class="btn">Sign Up</button>
+        </form>
+
+        <p class="bottom-text">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
       </div>
     </div>
+
+    <!-- Right Image Side -->
+    <div class="image-side"></div>
   </div>
 </body>
 </html>

@@ -6,52 +6,57 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-  <div class="auth-background">
-    <div class="auth-overlay"></div>
-    <div class="auth-card">
-      <h2>Register Recycling Center</h2>
-      <p class="subtitle">Create your official center account</p>
+  <div class="split-container">
+    <!-- Left Form Section -->
+    <div class="form-side">
+      <div class="form-box">
+        <h2>Register Recycling Center</h2>
+        <p class="subtitle">Create your official center account</p>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <div class="flash-messages">
-            {% for category, message in messages %}
-              <p class="flash {{ category }}">{{ message }}</p>
-            {% endfor %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <p class="flash {{ category }}">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+          <div class="input-group">
+            <label for="name">Center Name</label>
+            <input type="text" name="name" placeholder="e.g. GreenWorld Recycling" required>
           </div>
-        {% endif %}
-      {% endwith %}
 
-      <form method="POST">
-        <div class="input-group">
-          <label for="name">Center Name</label>
-          <input type="text" name="name" placeholder="e.g. GreenWorld Recycling" required>
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" placeholder="center@example.com" required>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Create a password" required>
+          </div>
+
+          <div class="input-group">
+            <label for="confirm">Confirm Password</label>
+            <input type="password" name="confirm" placeholder="Confirm your password" required>
+          </div>
+
+          <button type="submit" class="btn">Create Center Account</button>
+        </form>
+
+        <p class="info-text">Note: Your signup request will be reviewed by the admin before you can log in.</p>
+
+        <div class="bottom-text">
+          <p>Already registered? <a href="{{ url_for('center_login') }}">Login instead</a></p>
         </div>
-
-        <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" name="email" placeholder="center@example.com" required>
-        </div>
-
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" name="password" required>
-        </div>
-
-        <div class="input-group">
-          <label for="confirm">Confirm Password</label>
-          <input type="password" name="confirm" required>
-        </div>
-
-        <button type="submit" class="auth-btn">Create Center Account</button>
-      </form>
-
-      <p class="info-text">Note: Your signup request will be reviewed by the admin before you can log in.</p>
-
-      <div class="bottom-text">
-        <p>Already registered? <a href="{{ url_for('center_login') }}">Login instead</a></p>
       </div>
     </div>
+
+    <!-- Right Image Section -->
+    <div class="image-side"></div>
   </div>
 </body>
 </html>

@@ -6,39 +6,41 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-  <!-- Full-screen background with frosted card -->
-  <div class="auth-background">
-    <div class="auth-overlay"></div>
-    <div class="auth-card">
-      <h2>Welcome Back</h2>
-      <p class="subtitle">Please sign in to continue</p>
-      
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="flash-messages">
-            {% for message in messages %}
-              <p>{{ message }}</p>
-            {% endfor %}
+  <div class="split-container">
+    <!-- Left: Login Form -->
+    <div class="form-side">
+      <div class="form-box">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Please sign in to continue</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="input-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" placeholder="you@example.com" required>
           </div>
-        {% endif %}
-      {% endwith %}
-      
-      <form action="{{ url_for('login') }}" method="POST">
-        <div class="input-group">
-          <label for="email">Email Address</label>
-          <input type="email" name="email" id="email" placeholder="you@example.com" required>
-        </div>
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" name="password" id="password" placeholder="Enter your password" required>
-        </div>
-        <button type="submit" class="auth-btn">Login</button>
-      </form>
-      
-      <div class="bottom-text">
-        <p>Don’t have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Enter your password" required>
+          </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p class="bottom-text">Don’t have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
       </div>
     </div>
+
+    <!-- Right: Image -->
+    <div class="image-side"></div>
   </div>
 </body>
 </html>

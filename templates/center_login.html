@@ -6,40 +6,45 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 </head>
 <body>
-  <div class="auth-background">
-    <div class="auth-overlay"></div>
-    <div class="auth-card">
-      <h2>Recycling Center Login</h2>
-      <p class="subtitle">Authorized center login only</p>
+  <div class="split-container">
+    <!-- Left Form Section -->
+    <div class="form-side">
+      <div class="form-box">
+        <h2>Recycling Center Login</h2>
+        <p class="subtitle">Authorized center login only</p>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <div class="flash-messages">
-            {% for category, message in messages %}
-              <p class="flash {{ category }}">{{ message }}</p>
-            {% endfor %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <p class="flash {{ category }}">{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" placeholder="center@example.com" required>
           </div>
-        {% endif %}
-      {% endwith %}
 
-      <form method="POST">
-        <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" name="email" placeholder="center@example.com" required>
-        </div>
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Your center password" required>
+          </div>
 
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" name="password" placeholder="Your center password" required>
-        </div>
+          <button type="submit" class="btn">Login</button>
+        </form>
 
-        <button type="submit" class="auth-btn">Login</button>
-      </form>
-
-      <div class="bottom-text">
-        <p><a href="{{ url_for('index') }}">← Back to EcoEarn Home</a></p>
+        <p class="bottom-text">
+          <a href="{{ url_for('center_signup') }}">← Back to Signup</a>
+        </p>
       </div>
     </div>
+
+    <!-- Right Image Section -->
+    <div class="image-side"></div>
   </div>
 </body>
 </html>
