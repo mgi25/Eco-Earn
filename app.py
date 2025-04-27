@@ -4,7 +4,7 @@ import time
 import json
 import base64  # <-- IMPORTANT: import base64 to fix the undefined error
 from functools import wraps
-from flask import Flask, render_template, request, url_for, redirect, flash, session
+from flask import Flask, render_template, request, url_for, redirect, flash, session,jsonify    
 from pymongo import MongoClient
 from config import DB_URL
 import bcrypt
@@ -15,6 +15,9 @@ import requests
 import uuid
 import re
 from markupsafe import Markup
+from datetime import datetime
+import calendar
+
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  # Replace with your secret key
 
@@ -1359,6 +1362,120 @@ def leaderboard():
 
     return render_template('leaderboard.html',top_users=top_users,current_user=current_user_name,user_rank=user_rank,user_rewards=current_user_rewards,user_items=current_user_items)
 
+@app.route('/user_dashboard')
+def user_dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    return render_template('user_dashboard.html')
+
+@app.route('/user_dashboard/data', methods=['POST'])
+def user_dashboard_data():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    data = request.get_json()
+    from_date = datetime.strptime(data['from_date'], '%Y-%m-%d')
+    to_date = datetime.strptime(data['to_date'], '%Y-%m-%d')
+
+    user_id = session['user_id']
+
+    # --- REWARDS CUMULATIVE CALCULATION (Items + Withdrawals) ---
+    cumulative_rewards = {}
+    running_total = 0
+
+    # Fetch all item rewards
+    item_cursor = db.connected_items.find({
+        "userId": user_id,
+        "status": "Approved",
+        "timestamp": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
+    })
+
+    for item in item_cursor:
+        date = item['timestamp']
+        value = float(item.get('estimated_value', 0))
+        cumulative_rewards[date] = cumulative_rewards.get(date, 0) + value
+
+    # Fetch all withdrawals
+    withdrawal_cursor = db.transactions.find({
+        "userId": user_id,
+        "transactionDate": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
+    })
+
+    for withdrawal in withdrawal_cursor:
+        date = withdrawal['transactionDate']
+        value = float(withdrawal.get('redeemAmount', 0))
+        cumulative_rewards[date] = cumulative_rewards.get(date, 0) - value
+
+    # Sort by date for cumulative summation
+    sorted_dates = sorted(cumulative_rewards.keys())
+    cumulative_sum = []
+    total = 0
+    for d in sorted_dates:
+        total += cumulative_rewards[d]
+        cumulative_sum.append(total)
+
+    rewards = {
+        "labels": sorted_dates,
+        "datasets": [{
+            "label": "Cumulative Rewards ($)",
+            "data": cumulative_sum,
+            "backgroundColor": "rgba(46, 125, 50, 0.2)",
+            "borderColor": "#2e7d32",
+            "fill": True,
+            "tension": 0.3
+        }]
+    }
+
+    # --- ITEMS Data ---
+    items_data = {}
+    items_cursor = db.connected_items.find({
+        "userId": user_id,
+        "status": "Approved",
+        "timestamp": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
+    })
+
+    for item in items_cursor:
+        day = item.get('timestamp')
+        if day:
+            items_data[day] = items_data.get(day, 0) + 1
+
+    items = {
+        "labels": list(items_data.keys()),
+        "datasets": [{
+            "label": "Items Recycled",
+            "data": list(items_data.values()),
+            "backgroundColor": "#66bb6a"
+        }]
+    }
+
+    # --- MATERIALS Data ---
+    materials_count = {}
+    materials_cursor = db.connected_items.find({
+        "userId": user_id,
+        "status": "Approved",
+        "timestamp": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
+    })
+
+    for mat in materials_cursor:
+        mtype = mat.get('material_type', 'Unknown')
+        materials_count[mtype] = materials_count.get(mtype, 0) + 1
+
+    materials = {
+        "labels": list(materials_count.keys()),
+        "datasets": [{
+            "label": "Materials",
+            "data": list(materials_count.values()),
+            "backgroundColor": [
+                "#66bb6a", "#42a5f5", "#ffca28", "#ef5350", "#ab47bc", "#26a69a"
+            ]
+        }]
+    }
+
+    return jsonify({
+        "rewards": rewards,
+        "items": items,
+        "materials": materials
+    })
 
 
 if __name__ == '__main__':

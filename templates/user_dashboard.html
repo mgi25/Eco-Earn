@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Dashboard | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user_dashboard.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+  <script src="{{ url_for('static', filename='js/user_dashboard.js') }}" defer></script> <!-- Our Dashboard JS -->
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">EcoEarn</div>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- DASHBOARD MAIN CONTENT -->
+<section class="dashboard-container">
+
+  <h1>📊 Your Recycling Journey</h1>
+
+  <!-- Date Filter -->
+  <div class="date-filters">
+    <label for="from-date">From:</label>
+    <input type="date" id="from-date">
+
+    <label for="to-date">To:</label>
+    <input type="date" id="to-date">
+
+    <button class="btn" onclick="loadDashboardData()">Update</button>
+  </div>
+
+  <!-- GRAPHS -->
+  <div class="dashboard-graphs">
+
+    <div class="graph-card">
+      <canvas id="rewardsChart"></canvas>
+    </div>
+
+    <div class="small-graphs">
+      <div class="graph-card">
+        <canvas id="itemsChart"></canvas>
+      </div>
+
+      <div class="graph-card">
+        <canvas id="materialsChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Back to Home -->
+  <div class="back-button-container">
+    <a href="{{ url_for('home') }}" class="btn">⬅ Back to Home</a>
+  </div>
+
+</section>
+
+</body>
+</html>

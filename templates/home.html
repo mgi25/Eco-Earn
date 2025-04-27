@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-logo">EcoEarn</div>
@@ -28,12 +29,12 @@
       <a class="cta-button" href="{{ url_for('scan_item') }}">Scan Now</a>
     </div>
   </section>
-  
 
   <!-- HOME CONTENT -->
   <section class="home-content">
     <div class="container">
-      <!-- Dashboard -->
+
+      <!-- Dashboard Row -->
       <div class="dashboard-row">
         <!-- Profile Card -->
         <div class="profile-summary card">
@@ -57,18 +58,21 @@
             </div>
             <div class="stat-box">
               <h3>Total Rewards Earned</h3>
-              <p>{{ user.rewards if user.rewards is defined else 0 }}</p>
+              <p>${{ user.rewards|round(2) if user.rewards is defined else 0 }}</p>
             </div>
             <div class="stat-box">
               <h3>Impact</h3>
-              <p>You saved 
-                {% if user.items_recycled is defined %}
-                {{ (user.items_recycled * 0.1)|round(1) }}
-                {% else %} 0 {% endif %} trees!
-              </p>
+              <p>You saved {% if user.items_recycled is defined %}{{ (user.items_recycled * 0.1)|round(1) }}{% else %}0{% endif %} trees!</p>
             </div> 
           </div>
         </div>
+      </div>
+
+      <!-- DASHBOARD TRACKER CARD (NEW) -->
+      <div class="dashboard-card">
+        <h2>📈 Track Your Recycling Journey!</h2>
+        <p>View your rewards, recycled items, and material progress over time.</p>
+        <a href="{{ url_for('user_dashboard') }}" class="btn-dashboard">Go to Dashboard</a>
       </div>
 
       <!-- Action Cards -->
@@ -98,10 +102,10 @@
           <p>Convert your points into cash or gift cards.</p>
           <a href="{{ url_for('redeem_rewards') }}" class="btn">Redeem Now</a>
         </div>
-        <div class="card">
+        <div class="card action-card">
           <h2>View Leaderboard</h2>
           <p>See top recyclers and challenge yourself!</p>
-          <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+          <a href="{{ url_for('leaderboard') }}" class="btn">Leaderboard</a>
         </div>
       </div>
 
@@ -120,24 +124,26 @@
           {% endfor %}
         </ul>
       </section>
+
     </div>
   </section>
+
   <!-- Persistent Chatbot Button -->
-<div id="homepage-chat-toggle" onclick="toggleHomeChat()">💬 Chat with EcoBot</div>
+  <div id="homepage-chat-toggle" onclick="toggleHomeChat()">💬 Chat with EcoBot</div>
 
-<!-- Home Chatbot UI -->
-<div id="homepage-chat-widget">
-  <div class="chat-header">EcoBot - Ask Us Anything! <span onclick="toggleHomeChat()">×</span></div>
-  <div class="chat-body" id="homepage-chat-body">
-    <div class="chat-message bot">Hello! I'm EcoBot. Ask me anything about EcoEarn — our mission, rewards, features, or how to get started 🌍</div>
+  <!-- Home Chatbot UI -->
+  <div id="homepage-chat-widget">
+    <div class="chat-header">EcoBot - Ask Us Anything! <span onclick="toggleHomeChat()">×</span></div>
+    <div class="chat-body" id="homepage-chat-body">
+      <div class="chat-message bot">Hello! I'm EcoBot. Ask me anything about EcoEarn — our mission, rewards, features, or how to get started 🌍</div>
+    </div>
+    <form id="homepage-chat-form">
+      <input type="text" id="homepage-chat-input" placeholder="Type your question..." autocomplete="off" required />
+      <button type="submit">Send</button>
+    </form>
   </div>
-  <form id="homepage-chat-form">
-    <input type="text" id="homepage-chat-input" placeholder="Type your question..." autocomplete="off" required />
-    <button type="submit">Send</button>
-  </form>
-</div>
 
-<script src="{{ url_for('static', filename='js/home_chatbot.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/home_chatbot.js') }}"></script>
 
 </body>
 </html>

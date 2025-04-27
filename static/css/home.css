@@ -435,4 +435,45 @@
     font-weight: bold;
     cursor: pointer;
   }
-  
+  /* =============================
+   DASHBOARD TRACKER CARD (NEW)
+============================= */
+.dashboard-card {
+  background: #ffffff;
+  padding: 30px;
+  margin: 40px auto;
+  max-width: 800px;
+  text-align: center;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  animation: fadeIn 1s ease forwards;
+}
+
+.dashboard-card h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #2e7d32;
+}
+
+.dashboard-card p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #555;
+}
+
+.btn-dashboard {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.btn-dashboard:hover {
+  background: linear-gradient(135deg, #1b5e20, #43a047);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}

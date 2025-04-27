@@ -1,0 +1,164 @@
+/* ---------------------------
+   Dashboard General Layout
+---------------------------- */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  
+  /* Navbar (reusing your app's style) */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .nav-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2e7d32;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    color: #2e7d32;
+    font-weight: 600;
+  }
+  
+  .nav-links li a:hover {
+    color: #43a047;
+  }
+  
+  /* ---------------------------
+     Dashboard Page Content
+  ---------------------------- */
+  .dashboard-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .dashboard-container h1 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 2rem;
+  }
+  
+  /* Date Filter Section */
+  .date-filters {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .date-filters label {
+    margin: 0 8px;
+    font-weight: bold;
+  }
+  
+  .date-filters input[type="date"] {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 0 5px;
+  }
+  
+  .date-filters .btn {
+    background: linear-gradient(135deg, #2e7d32, #66bb6a);
+    color: white;
+    padding: 8px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .date-filters .btn:hover {
+    background: linear-gradient(135deg, #1b5e20, #43a047);
+  }
+  
+  /* Graphs Container */
+  .dashboard-graphs {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  /* Main Graph Card */
+  .graph-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Two small graphs side by side */
+  .small-graphs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+  
+  .small-graphs .graph-card {
+    flex: 1 1 400px;
+  }
+  
+  /* Back Button */
+  .back-button-container {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .back-button-container .btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #2e7d32, #66bb6a);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background 0.3s ease;
+  }
+  
+  .back-button-container .btn:hover {
+    background: linear-gradient(135deg, #1b5e20, #43a047);
+  }
+  
+  /* ---------------------------
+     Animations
+  ---------------------------- */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Apply fadeIn on graphs */
+  .graph-card {
+    animation: fadeIn 0.7s ease forwards;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .small-graphs {
+      flex-direction: column;
+    }
+  }
+  
