@@ -1,0 +1,147 @@
+/* ===== Admin Graph Dashboard CSS ===== */
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+    color: #333;
+    min-height: 100vh;
+  }
+  
+  /* Navbar */
+  .navbar {
+    background: #00796b;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+  }
+  
+  .nav-links li a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-links li a:hover,
+  .nav-links li a.active {
+    color: #b2dfdb;
+  }
+  
+  /* Container */
+  .container {
+    padding: 2rem;
+    max-width: 1300px;
+    margin: auto;
+  }
+  
+  .container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #00796b;
+  }
+  
+  /* ===== New: Date Filters ===== */
+  .date-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .date-filters input[type="date"] {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  #filter-btn {
+    padding: 0.7rem 1.5rem;
+    background: #00796b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  #filter-btn:hover {
+    background: #004d40;
+  }
+  
+  /* Graph Grid */
+  .graph-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 2rem;
+  }
+  
+  /* Graph Card */
+  .graph-card {
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .graph-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+  
+  /* Back Button */
+  .back-btn-container {
+    margin-top: 3rem;
+    text-align: center;
+  }
+  
+  .btn {
+    display: inline-block;
+    background: #00796b;
+    color: white;
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .btn:hover {
+    background: #004d40;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .graph-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .date-filters {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+  }
+  

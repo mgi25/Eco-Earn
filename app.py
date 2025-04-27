@@ -73,7 +73,8 @@ def signup():
             "password": hashed,
             "rewards": 0,
             "items_recycled": 0,
-            "admin": False
+            "admin": False,
+            "createdAt": datetime.now().strftime("%Y-%m-%d")
         })
         flash("Signup successful! Please log in.")
         return redirect(url_for('login'))
@@ -372,18 +373,24 @@ def my_items():
     return render_template("my_items.html", items=items_list)
 
 
-
 @app.route('/transaction_history')
 def transaction_history():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
+
     user_id = session['user_id']
-    user_transactions = db.transactions.find({"userId": user_id})
+    # 👉 Only find withdrawal transactions now
+    user_transactions = db.transactions.find({
+        "userId": user_id,
+        "type": "withdrawal"
+    })
+
     transactions_list = []
     for tx in user_transactions:
         tx['_id'] = str(tx['_id'])
         transactions_list.append(tx)
+
     return render_template('transaction_history.html', transactions=transactions_list)
 
 @app.route('/redeem_rewards', methods=['GET', 'POST'])
@@ -438,7 +445,6 @@ def redeem_details():
         bank_name = request.form.get('bank_name')
         account_number = request.form.get('account_number')
         ifsc_code = request.form.get('ifsc_code')
-        # Or you could have a "payment_method" dropdown, etc.
 
         # Validate the fields (simple example)
         if not (bank_name and account_number and ifsc_code):
@@ -450,24 +456,14 @@ def redeem_details():
             flash("You no longer have enough rewards to redeem that amount.")
             return redirect(url_for('redeem_rewards'))
 
-        # Deduct points from user
+        # ✅ Deduct points from user
         db.users.update_one(
             {"_id": ObjectId(session['user_id'])},
             {"$inc": {"rewards": -redeem_value}}
         )
 
-        # Insert redemption transaction
-        tx_id = db.transactions.insert_one({
-            "userId": session['user_id'],
-            "transactionDate": time.strftime("%Y-%m-%d"),
-            "type": "redeem",
-            "redeemAmount": redeem_value,
-            "paymentInfo": {
-                "bankName": bank_name,
-                "accountNumber": account_number,
-                "ifscCode": ifsc_code
-            }
-        }).inserted_id
+        # ✅ Insert proper withdrawal transaction
+        add_transaction(session['user_id'], "withdrawal", redeem_value)
 
         # Clear the session redeem_value
         session.pop('redeem_value', None)
@@ -586,7 +582,8 @@ def admin_add_center():
             "address": address,
             "acceptedItems": accepted_items_list,
             "location": {"type": "Point", "coordinates": [float(lon), float(lat)]} if lat and lon else None,
-            "image": image_url
+            "image": image_url,
+            "createdAt": datetime.now().strftime("%Y-%m-%d")
         }
         db.recyclingCenters.insert_one(center)
         flash("Recycling center added successfully!")
@@ -714,7 +711,7 @@ def admin_delete_announcement(announcement_id):
     else:
         flash("Announcement not found!")
     return redirect(url_for('admin_announcements'))
-from bson import ObjectId
+
 
 @app.route('/profile')
 def profile():
@@ -935,7 +932,8 @@ def center_signup():
             "address": "",
             "acceptedItems": [],
             "location": None,
-            "image": None
+            "image": None,
+            "createdAt": datetime.now().strftime("%Y-%m-%d")
         }).inserted_id
 
         db.center_logins.insert_one({
@@ -1476,6 +1474,155 @@ def user_dashboard_data():
         "items": items,
         "materials": materials
     })
+
+# ========== Admin Graph Page ==========
+@app.route('/admin_graph')
+def admin_graph():
+    if 'is_admin' not in session or not session['is_admin']:
+        flash("Admin access required!", "danger")
+        return redirect(url_for('login'))
+    return render_template('admin_graph.html')
+
+# ========== Admin Graph Data API ==========
+@app.route('/admin_graph/data', methods=['POST'])
+def admin_graph_data():
+    if 'is_admin' not in session or not session['is_admin']:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    data = request.get_json()
+    from_date = datetime.strptime(data['from_date'], '%Y-%m-%d')
+    to_date = datetime.strptime(data['to_date'], '%Y-%m-%d')
+
+    from_date_str = from_date.strftime("%Y-%m-%d")
+    to_date_str = to_date.strftime("%Y-%m-%d")
+
+    # --- 1. Users Growth Over Time ---
+    user_growth = {}
+    users = db.users.find()
+
+    for user in users:
+        date = user.get('createdAt') or user.get('registeredDate')
+        if date:
+            date = date.split('T')[0] if 'T' in date else date
+            if from_date_str <= date <= to_date_str:
+                user_growth[date] = user_growth.get(date, 0) + 1
+
+    sorted_user_growth = dict(sorted(user_growth.items()))
+    cumulative_users = []
+    total_users = 0
+    for d in sorted_user_growth:
+        total_users += sorted_user_growth[d]
+        cumulative_users.append(total_users)
+
+    users_growth = {
+        "labels": list(sorted_user_growth.keys()),
+        "datasets": [{
+            "label": "Total Users",
+            "data": cumulative_users,
+            "borderColor": "#42a5f5",
+            "backgroundColor": "rgba(66, 165, 245, 0.2)",
+            "fill": True,
+            "tension": 0.3
+        }]
+    }
+
+    # --- 2. Centers Growth Over Time ---
+    center_growth = {}
+    centers = db.recyclingCenters.find()
+
+    for center in centers:
+        date = center.get('createdAt')
+        if date:
+            date = date.split('T')[0] if 'T' in date else date
+            if from_date_str <= date <= to_date_str:
+                center_growth[date] = center_growth.get(date, 0) + 1
+
+    sorted_center_growth = dict(sorted(center_growth.items()))
+    cumulative_centers = []
+    total_centers = 0
+    for d in sorted_center_growth:
+        total_centers += sorted_center_growth[d]
+        cumulative_centers.append(total_centers)
+
+    centers_growth = {
+        "labels": list(sorted_center_growth.keys()),
+        "datasets": [{
+            "label": "Total Centers",
+            "data": cumulative_centers,
+            "borderColor": "#66bb6a",
+            "backgroundColor": "rgba(102, 187, 106, 0.2)",
+            "fill": True,
+            "tension": 0.3
+        }]
+    }
+
+    # --- 3. Items Uploaded ---
+    items_uploaded = {}
+    items = db.connected_items.find({"status": "Approved"})
+
+    for item in items:
+        date = item.get('timestamp')
+        if date:
+            date = date.split('T')[0] if 'T' in date else date
+            if from_date_str <= date <= to_date_str:
+                items_uploaded[date] = items_uploaded.get(date, 0) + 1
+
+    sorted_items_uploaded = dict(sorted(items_uploaded.items()))
+
+    items_uploaded_chart = {
+        "labels": list(sorted_items_uploaded.keys()),
+        "datasets": [{
+            "label": "Items Uploaded",
+            "data": list(sorted_items_uploaded.values()),
+            "backgroundColor": "#ffa726"
+        }]
+    }
+
+    # --- 4. Transactions (Redeemed vs Remaining) ---
+    total_redeemed = 0
+    redeemed_tx = db.transactions.find({
+        "transactionType": "Redeem",
+        "transactionDate": {"$gte": from_date_str, "$lte": to_date_str}
+    })
+    for tx in redeemed_tx:
+        total_redeemed += float(tx.get('redeemAmount', 0))
+
+    total_remaining = 0
+    users_cursor = db.users.find()
+    for user in users_cursor:
+        total_remaining += float(user.get('rewards', 0))
+
+    transactions_split = {
+        "labels": ["Redeemed", "Remaining"],
+        "datasets": [{
+            "label": "Rewards",
+            "data": [total_redeemed, total_remaining],
+            "backgroundColor": ["#66bb6a", "#42a5f5"]
+        }]
+    }
+
+    return jsonify({
+        "users_growth": users_growth,
+        "centers_growth": centers_growth,
+        "items_uploaded": items_uploaded_chart,
+        "transactions_split": transactions_split
+    })
+def add_transaction(user_id, tx_type, amount):
+    transaction = {
+        "userId": user_id,
+        "transactionDate": time.strftime("%Y-%m-%d")
+    }
+    
+    if tx_type == "reward":
+        transaction["type"] = "reward"
+        transaction["totalEarnings"] = amount
+    elif tx_type == "withdrawal":
+        transaction["type"] = "withdrawal"
+        transaction["amount"] = amount
+    else:
+        raise ValueError("Invalid transaction type!")
+
+    db.transactions.insert_one(transaction)
 
 
 if __name__ == '__main__':

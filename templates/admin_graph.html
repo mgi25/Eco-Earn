@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Graph Dashboard | EcoEarn</title>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_graph.css') }}">
+  
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart.js Adapter for Time Scale -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+<!-- Your Custom JS -->
+<script src="{{ url_for('static', filename='js/admin_graph.js') }}"></script>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn Admin</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('admin_graph') }}" class="active">Graphs</a></li>
+      <li><a href="{{ url_for('admin_users') }}">Users</a></li>
+      <li><a href="{{ url_for('admin_centers') }}">Centers</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h1>📊 Admin Statistics Dashboard</h1>
+
+    <!-- Date Filters -->
+    <div class="date-filters">
+      <input type="date" id="from-date">
+      <input type="date" id="to-date">
+      <button id="filter-btn">Filter</button>
+    </div>
+
+    <div class="graph-grid">
+
+      <!-- Users Growth -->
+      <div class="graph-card">
+        <canvas id="usersGrowthChart"></canvas>
+      </div>
+
+      <!-- Centers Growth -->
+      <div class="graph-card">
+        <canvas id="centersGrowthChart"></canvas>
+      </div>
+
+      <!-- Items Uploaded -->
+      <div class="graph-card">
+        <canvas id="itemsUploadedChart"></canvas>
+      </div>
+
+      <!-- Transactions Split -->
+      <div class="graph-card">
+        <canvas id="transactionsSplitChart"></canvas>
+      </div>
+
+    </div>
+
+    <div class="back-btn-container">
+      <a href="{{ url_for('admin_dashboard') }}" class="btn">← Back to Admin Dashboard</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
