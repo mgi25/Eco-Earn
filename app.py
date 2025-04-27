@@ -1304,6 +1304,12 @@ def update_connection_status(req_id):
             {"_id": ObjectId(user_id)},
             {"$inc": {"rewards": estimated_value}}
         )
+        
+        # ✅ Also increment items_recycled
+        db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"items_recycled": 1}}
+        )
 
     flash(f"✅ Request updated and marked as {status}.")
     return redirect(url_for('center_requests'))
@@ -1323,6 +1329,37 @@ def center_approved_items():
         req["item"] = item
 
     return render_template("center_approved_items.html", approved_data=approved_data)
+
+@app.route('/leaderboard')
+def leaderboard():
+    if 'user_id' not in session:
+        flash("Please log in first.")
+        return redirect(url_for('login'))
+
+    # Sort users by rewards descending
+    top_users = list(db.users.find().sort("rewards", -1))
+
+    # Get current user
+    current_user_doc = db.users.find_one({"_id": ObjectId(session['user_id'])})
+
+    if not current_user_doc:
+        flash("User not found.")
+        return redirect(url_for('login'))
+
+    current_user_name = current_user_doc['name']
+    current_user_rewards = current_user_doc.get('rewards', 0)
+    current_user_items = current_user_doc.get('items_recycled', 0)
+
+    # Find current user's rank
+    user_rank = None
+    for idx, user in enumerate(top_users):
+        if user['name'] == current_user_name:
+            user_rank = idx + 1
+            break
+
+    return render_template('leaderboard.html',top_users=top_users,current_user=current_user_name,user_rank=user_rank,user_rewards=current_user_rewards,user_items=current_user_items)
+
+
 
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):

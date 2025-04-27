@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leaderboard | EcoEarn</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/leaderboard.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-logo">EcoEarn</div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container leaderboard-container">
+    <h1 class="leaderboard-heading">🏆 Leaderboard 🏆</h1>
+
+    {% if top_users %}
+      <!-- Top 3 -->
+      <div class="podium">
+        {% if top_users|length > 1 %}
+          <div class="second-place">
+            <img src="{{ url_for('static', filename=top_users[1].profilePicture) if top_users[1].profilePicture else url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile" class="profile-pic">
+            <div class="medal">🥈</div>
+            <h2>{{ top_users[1].name }}</h2>
+            <p>Rewards: ${{ '%.2f'|format(top_users[1].rewards) }}</p>
+            <p>{{ top_users[1].items_recycled }} Items</p>
+          </div>
+        {% endif %}
+
+        {% if top_users|length > 0 %}
+          <div class="first-place">
+            <img src="{{ url_for('static', filename=top_users[0].profilePicture) if top_users[0].profilePicture else url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile" class="profile-pic">
+            <div class="crown">👑</div>
+            <h2>{{ top_users[0].name }}</h2>
+            <p>Rewards: ${{ '%.2f'|format(top_users[0].rewards) }}</p>
+            <p>{{ top_users[0].items_recycled }} Items</p>
+          </div>
+        {% endif %}
+
+        {% if top_users|length > 2 %}
+          <div class="third-place">
+            <img src="{{ url_for('static', filename=top_users[2].profilePicture) if top_users[2].profilePicture else url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile" class="profile-pic">
+            <div class="medal">🥉</div>
+            <h2>{{ top_users[2].name }}</h2>
+            <p>Rewards: ${{ '%.2f'|format(top_users[2].rewards) }}</p>
+            <p>{{ top_users[2].items_recycled }} Items</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Top 4 & 5 -->
+      <div class="top5-list">
+        {% for user in top_users[3:5] %}
+          <div class="small-card">
+            <img src="{{ url_for('static', filename=user.profilePicture) if user.profilePicture else url_for('static', filename='images/default_avatar.jpg') }}" alt="Profile" class="profile-pic-small">
+            <div>
+              <h3>#{{ loop.index + 3 }} {{ user.name }}</h3>
+              <p>Rewards: ${{ '%.2f'|format(user.rewards) }}</p>
+              <p>{{ user.items_recycled }} Items</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Current User if not in top 5 -->
+      {% set top5_names = [] %}
+      {% for u in top_users[:5] %}
+        {% set _ = top5_names.append(u.name) %}
+      {% endfor %}
+
+      {% if current_user not in top5_names %}
+      <div class="current-user-card">
+        <h3>You ({{ current_user }})</h3>
+        <p>Your Rank: {{ user_rank }}</p>
+        <p>Rewards: ${{ '%.2f'|format(user_rewards) }}</p>
+        <p>{{ user_items }} Items</p>
+      </div>
+      {% endif %}
+
+      <!-- Hidden Users (after View All) -->
+      <div class="hidden-users" id="hiddenUsers" style="display:none;">
+        {% set batch_size = 100 %}
+        {% set batch = 0 %}
+        {% for user in top_users[5:] %}
+          {% if (loop.index0) % batch_size == 0 %}
+            <h3 class="batch-heading">🏅 {{ batch }} - {{ batch + batch_size - 1 }}</h3>
+            {% set batch = batch + batch_size %}
+          {% endif %}
+          <div class="other-user">
+            <h3>#{{ loop.index + 5 }} {{ user.name }}</h3>
+            <p>Rewards: ${{ '%.2f'|format(user.rewards) }}</p>
+            <p>{{ user.items_recycled }} Items</p>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- View All Users Button -->
+      <div class="view-all-btn-container">
+        <button class="btn" onclick="showHiddenUsers()">View All Users</button>
+      </div>
+
+    {% else %}
+      <p class="no-users-text">No users found yet!</p>
+    {% endif %}
+
+    <div class="back-button-container">
+      <a href="{{ url_for('home') }}" class="btn">⬅ Back to Home</a>
+    </div>
+  </div>
+
+<script>
+function showHiddenUsers() {
+  document.getElementById('hiddenUsers').style.display = 'flex';
+  document.querySelector('.view-all-btn-container').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
