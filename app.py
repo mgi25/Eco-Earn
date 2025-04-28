@@ -1,7 +1,7 @@
 import os
 import time
 import json
-import base64  # <-- IMPORTANT: import base64 to fix the undefined error
+import base64  
 from functools import wraps
 from flask import Flask, render_template, request, url_for, redirect, flash, session,jsonify    
 from pymongo import MongoClient
@@ -18,21 +18,19 @@ from datetime import datetime
 import calendar
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key_here"  # Replace with your secret key
+app.secret_key = "your_secret_key_here"  
 
-# Connect to MongoDB
+
 client = MongoClient(DB_URL)
 db = client['ecoearn']
 app.config['db'] = db
 
-# Ensure 2dsphere index for recyclingCenters
 if "location_2dsphere" not in db.recyclingCenters.index_information():
     db.recyclingCenters.create_index({"location": "2dsphere"})
 
-# File upload configuration
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024  # 128 MB
+app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024  
 
 
 def allowed_file(filename):
@@ -42,10 +40,6 @@ def allowed_file(filename):
 def handle_file_too_large(e):
     flash("File size exceeds limit. Please upload smaller files or split your uploads into multiple sessions.")
     return redirect(request.url)
-
-# -----------------------
-# MAIN APPLICATION ROUTES
-# -----------------------
 
 @app.route('/')
 def index():
@@ -84,7 +78,6 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email').lower()
         password = request.form.get('password')
-        # Hardcoded admin credentials for testing:
         if email == 'admin@example.com' and password == 'admin123':
             session['user_id'] = 'admin'
             session['is_admin'] = True
@@ -112,8 +105,6 @@ def home():
         user = {"name": "Admin", "rewards": 0, "items_recycled": 0}
     else:
         user = db.users.find_one({"_id": ObjectId(session['user_id'])})
-
-        # ✅ Count items where user’s item was approved
         recycled_count = db.connected_items.count_documents({
             "userId": session['user_id'],
             "status": "Approved"
@@ -125,9 +116,6 @@ def home():
         ann['_id'] = str(ann['_id'])
 
     return render_template('home.html', user=user, announcements=announcements)
-
-
-# AI prediction
 RECYCLABLE_KEYWORDS = [
     "plastic", "metal", "steel", "stainless", "aluminum", "can", "bottle",
     "glass", "tin", "container", "jar", "foil", "cup", "recyclable",
@@ -223,10 +211,8 @@ def scan_item():
         except Exception as e:
             flash(f"AI prediction failed: {e}", "error")
             return redirect(url_for('scan_item'))
-
-        # Extract fields from prediction
         fields = extract_fields(prediction)
-        print("🔍 Extracted:", fields)  # Debug
+        print("🔍 Extracted:", fields) 
 
         recyclable = (
             is_recyclable_item(fields['material_type']) and
@@ -234,8 +220,6 @@ def scan_item():
             not reason_suggests_non_recyclable(fields['reason']) and
             not prediction_has_conflict(prediction)
         )
-
-        # Store in session for display
         session['last_prediction'] = prediction
         session['recyclable'] = recyclable
         session['material_type'] = fields['material_type']
@@ -246,7 +230,6 @@ def scan_item():
             os.remove(save_path)
             flash("⚠️ This doesn't appear to be a recyclable item. Try uploading a clear image of plastic, bottle, can, or similar.", "error")
         else:
-            # Save to database
             item_data = {
                 "userId": session['user_id'],
                 "image_path": "uploads/" + unique_name,
@@ -261,18 +244,10 @@ def scan_item():
 
             session['connect_item_id'] = item_id
             flash("✅ Item is recyclable!")
-
-
-
         return redirect(url_for('scan_item'))
 
     return render_template('scan_item.html')
 
-
-
-# -----------------------
-# RECYCLING CENTERS ROUTE
-# -----------------------
 @app.route('/recycling_centers')
 def recycling_centers():
     if 'user_id' not in session:
@@ -346,9 +321,6 @@ def logout():
     flash("Logged out successfully!")
     return redirect(url_for('login'))
 
-# -----------------------
-# MY ITEMS, TRANSACTION HISTORY, REDEEM REWARDS ROUTES
-# -----------------------
 @app.route('/my_items')
 def my_items():
     if 'user_id' not in session:
@@ -379,7 +351,6 @@ def transaction_history():
         return redirect(url_for('login'))
 
     user_id = session['user_id']
-    # 👉 Only find withdrawal transactions now
     user_transactions = db.transactions.find({
         "userId": user_id,
         "type": "withdrawal"
@@ -410,17 +381,13 @@ def redeem_rewards():
                 if redeem_value > current_rewards:
                     flash("You do not have enough rewards to redeem that amount.")
                 else:
-                    # Store the redeem_value in session for the next step
                     session['redeem_value'] = redeem_value
-                    # Go to redeem_details route
                     return redirect(url_for('redeem_details'))
-
             except ValueError:
                 flash("Please enter a valid number.")
 
         return redirect(url_for('redeem_rewards'))
 
-    # GET request: just show the form
     return render_template('redeem_rewards.html', user=user)
 
 @app.route('/redeem_details', methods=['GET', 'POST'])
@@ -429,8 +396,6 @@ def redeem_details():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
-
-    # Make sure we have a redeem_value stored
     redeem_value = session.get('redeem_value')
     if not redeem_value:
         flash("Please enter an amount to redeem first.")
@@ -440,39 +405,26 @@ def redeem_details():
     current_rewards = user.get('rewards', 0)
 
     if request.method == 'POST':
-        # Get bank/payment fields
         bank_name = request.form.get('bank_name')
         account_number = request.form.get('account_number')
         ifsc_code = request.form.get('ifsc_code')
-
-        # Validate the fields (simple example)
         if not (bank_name and account_number and ifsc_code):
             flash("Please fill all payment details.")
             return redirect(url_for('redeem_details'))
 
-        # Double-check user still has enough points
         if redeem_value > current_rewards:
             flash("You no longer have enough rewards to redeem that amount.")
             return redirect(url_for('redeem_rewards'))
 
-        # ✅ Deduct points from user
         db.users.update_one(
             {"_id": ObjectId(session['user_id'])},
             {"$inc": {"rewards": -redeem_value}}
         )
 
-        # ✅ Insert proper withdrawal transaction
         add_transaction(session['user_id'], "withdrawal", redeem_value)
-
-        # Clear the session redeem_value
         session.pop('redeem_value', None)
-
-        # Redirect to success page with the redeemed amount
         return redirect(url_for('redeem_success', amount=redeem_value))
-
-    # GET request: show the payment form
     return render_template('redeem_details.html', redeem_value=redeem_value)
-
 
 @app.route('/redeem_success')
 def redeem_success():
@@ -480,15 +432,8 @@ def redeem_success():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
-
-    # Retrieve the redeemed amount from query string
     redeem_amount = request.args.get('amount', 0)
     return render_template('redeem_success.html', redeem_amount=redeem_amount)
-
-
-# -----------------------
-# ADMIN ROUTES (Protected)
-# -----------------------
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -505,8 +450,6 @@ def admin_dashboard():
     centers = list(db.recyclingCenters.find())
     items = list(db.items.find()) if 'items' in db.list_collection_names() else []
     transactions = list(db.transactions.find()) if 'transactions' in db.list_collection_names() else []
-
-    # ✅ Fix: count both missing "verified" and explicitly False
     pending_centers = db.center_logins.count_documents({
         "$or": [
             {"verified": False},
@@ -525,8 +468,6 @@ def admin_dashboard():
     }
 
     return render_template('admin_dashboard.html', stats=stats)
-
-
 @app.route('/admin/users')
 @admin_required
 def admin_users():
@@ -722,18 +663,12 @@ def profile():
     if not user:
         flash("User not found. Please log in again.")
         return redirect(url_for('login'))
-    
-    # (Optional) Count items to show real stats:
-    # Only count items marked as recycled
     recycled_count = db.items.count_documents({
     "userId": session['user_id'],
     "status": "Recycled"
     })
     user['items_recycled'] = recycled_count
-
-
     return render_template('profile.html', user=user)
-
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def edit_profile():
@@ -758,28 +693,20 @@ def edit_profile():
             "phone": phone,
             "address": address
         }
-
-        # Check if a new profile image was uploaded
         if 'profile_image' in request.files and request.files['profile_image'].filename != '':
             file = request.files['profile_image']
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(save_path)
-                # e.g. "uploads/filename.jpg"
                 update_data["profilePicture"] = f"uploads/{filename}"
             else:
                 flash("Invalid file type for profile picture. Please upload a valid image.")
                 return redirect(url_for('edit_profile'))
-        
-        # Update user document in MongoDB
         db.users.update_one({"_id": ObjectId(session['user_id'])}, {"$set": update_data})
         flash("Profile updated successfully!")
         return redirect(url_for('profile'))
-    
-    # GET request: just show the edit form
     return render_template('profile_edit.html', user=user)
-
 
 @app.route('/home_chat_api', methods=['POST'])
 def home_chat_api():
@@ -802,7 +729,7 @@ Provide a helpful, polite, and informative answer in plain English.
         response = requests.post(
             "http://localhost:11434/api/generate",
             json={
-                "model": "llama3",  # or mixtral if supported
+                "model": "llama3",  
                 "prompt": prompt,
                 "stream": False
             }
@@ -811,15 +738,12 @@ Provide a helpful, polite, and informative answer in plain English.
         return {"reply": result.get("response", "Sorry, I couldn't answer that right now.")}
     except Exception as e:
         return {"reply": f"EcoBot Error: {e}"}
-
-#user connection
+    
 @app.route('/request_connection/<item_id>')
 def request_connection(item_id):
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
-
-    # Get location from query string (sent via JS or button click)
     lat_str = request.args.get('lat')
     lon_str = request.args.get('lon')
 
@@ -833,16 +757,12 @@ def request_connection(item_id):
     except ValueError:
         flash("Invalid location data.", "error")
         return redirect(url_for('my_items'))
-
-    # Get the item info
     item = db.items.find_one({"_id": ObjectId(item_id)})
     if not item:
         flash("Item not found.", "error")
         return redirect(url_for('my_items'))
 
     material_type = item.get('material_type', '').lower()
-
-    # Find the nearest center that accepts the material type
     pipeline = [
         {
             "$geoNear": {
@@ -868,7 +788,6 @@ def request_connection(item_id):
     closest_center = center[0]
     center_id = str(closest_center['_id'])
 
-    # Update item status
     db.items.update_one(
         {"_id": ObjectId(item_id)},
         {"$set": {
@@ -958,7 +877,6 @@ def center_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
 @app.route('/center/dashboard')
 @center_required
 def center_dashboard():
@@ -977,8 +895,6 @@ def center_dashboard():
         pending_items=pending_items
     )
 
-
-#admin verification
 @app.route('/admin/verify_centers')
 @admin_required
 def admin_verify_centers():
@@ -1044,7 +960,6 @@ def update_center_profile():
             if lat and lon:
                 location = {"type": "Point", "coordinates": [float(lon), float(lat)]}
 
-        # Handle image
         image_file = request.files.get("image")
         image_path = center_obj.get("image")
         if image_file and image_file.filename != "":
@@ -1074,12 +989,10 @@ def update_center_profile():
         flash("Your update request has been submitted and is pending admin approval.", "success")
         return redirect(url_for('update_center_profile'))
 
-    # Check for rejection status
     request_doc = db.center_update_requests.find_one({"centerId": ObjectId(center_id)})
     if request_doc and request_doc.get("status") == "Rejected":
         flash("⚠️ Your last update request was rejected. Please submit again.", "danger")
 
-    # Render form
     center_data = {
         "name": center_obj.get("name", ""),
         "address": center_obj.get("address", ""),
@@ -1149,8 +1062,6 @@ def connect_centers(item_id):
     except:
         flash("Invalid coordinates.")
         return redirect(url_for('scan_item'))
-
-    # Just get all centers within 50km, don't filter by item type
     pipeline = [
         {
             "$geoNear": {
@@ -1176,8 +1087,6 @@ def send_connection_request(item_id, center_id):
     if not item:
         flash("Item not found.")
         return redirect(url_for('scan_item'))
-
-    # Prevent duplicate requests
     exists = db.connected_items.find_one({
         "itemId": ObjectId(item_id),
         "centerId": ObjectId(center_id)
@@ -1210,8 +1119,6 @@ def center_requests():
         estimated_value = request.form.get('estimated_value')
         status = request.form.get('status')
         feedback = request.form.get('feedback')
-
-        # Update connected_items collection
         db.connected_items.update_one(
             {"_id": ObjectId(connection_id)},
             {
@@ -1223,8 +1130,6 @@ def center_requests():
                 }
             }
         )
-
-        # Also update the original items collection status to 'Recycled' if approved
         if status == "Approved":
             conn = db.connected_items.find_one({"_id": ObjectId(connection_id)})
             if conn and 'itemId' in conn:
@@ -1236,7 +1141,6 @@ def center_requests():
         flash("Item updated successfully.", "success")
         return redirect(url_for('center_requests'))
 
-    # --- GET method display ---
     connections = list(db.connected_items.find(
         {"centerId": center_id, "status": "Pending"},
         {
@@ -1250,7 +1154,6 @@ def center_requests():
         }
     ))
 
-    # Fetch corresponding item details without loading huge fields
     for conn in connections:
         item = db.items.find_one({"_id": conn["itemId"]}, {
             "material_type": 1,
@@ -1273,8 +1176,6 @@ def update_connection_status(req_id):
     material_type = request.form.get('material_type')
     estimated_value = float(request.form.get('estimated_value'))
     item_id = ObjectId(request.form.get('itemId'))
-
-    # Update the connected_items document
     db.connected_items.update_one(
         {"_id": ObjectId(req_id)},
         {"$set": {
@@ -1285,7 +1186,6 @@ def update_connection_status(req_id):
         }}
     )
 
-    # Update the item document too
     db.items.update_one(
         {"_id": item_id},
         {"$set": {
@@ -1296,7 +1196,6 @@ def update_connection_status(req_id):
         }}
     )
 
-    # If approved, add rewards to user account
     if status == "Approved":
         connected = db.connected_items.find_one({"_id": ObjectId(req_id)})
         user_id = connected['userId']
@@ -1304,8 +1203,6 @@ def update_connection_status(req_id):
             {"_id": ObjectId(user_id)},
             {"$inc": {"rewards": estimated_value}}
         )
-        
-        # ✅ Also increment items_recycled
         db.users.update_one(
             {"_id": ObjectId(user_id)},
             {"$inc": {"items_recycled": 1}}
@@ -1335,11 +1232,8 @@ def leaderboard():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
-
-    # Sort users by rewards descending
     top_users = list(db.users.find().sort("rewards", -1))
 
-    # Get current user
     current_user_doc = db.users.find_one({"_id": ObjectId(session['user_id'])})
 
     if not current_user_doc:
@@ -1350,7 +1244,6 @@ def leaderboard():
     current_user_rewards = current_user_doc.get('rewards', 0)
     current_user_items = current_user_doc.get('items_recycled', 0)
 
-    # Find current user's rank
     user_rank = None
     for idx, user in enumerate(top_users):
         if user['name'] == current_user_name:
@@ -1376,11 +1269,9 @@ def user_dashboard_data():
 
     user_id = session['user_id']
 
-    # --- REWARDS CUMULATIVE CALCULATION (Items + Withdrawals) ---
     cumulative_rewards = {}
     running_total = 0
 
-    # Fetch all item rewards
     item_cursor = db.connected_items.find({
         "userId": user_id,
         "status": "Approved",
@@ -1392,7 +1283,6 @@ def user_dashboard_data():
         value = float(item.get('estimated_value', 0))
         cumulative_rewards[date] = cumulative_rewards.get(date, 0) + value
 
-    # Fetch all withdrawals
     withdrawal_cursor = db.transactions.find({
         "userId": user_id,
         "transactionDate": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
@@ -1403,7 +1293,6 @@ def user_dashboard_data():
         value = float(withdrawal.get('redeemAmount', 0))
         cumulative_rewards[date] = cumulative_rewards.get(date, 0) - value
 
-    # Sort by date for cumulative summation
     sorted_dates = sorted(cumulative_rewards.keys())
     cumulative_sum = []
     total = 0
@@ -1423,7 +1312,6 @@ def user_dashboard_data():
         }]
     }
 
-    # --- ITEMS Data ---
     items_data = {}
     items_cursor = db.connected_items.find({
         "userId": user_id,
@@ -1445,7 +1333,6 @@ def user_dashboard_data():
         }]
     }
 
-    # --- MATERIALS Data ---
     materials_count = {}
     materials_cursor = db.connected_items.find({
         "userId": user_id,
@@ -1474,7 +1361,6 @@ def user_dashboard_data():
         "materials": materials
     })
 
-# ========== Admin Graph Page ==========
 @app.route('/admin_graph')
 def admin_graph():
     if 'is_admin' not in session or not session['is_admin']:
@@ -1482,7 +1368,6 @@ def admin_graph():
         return redirect(url_for('login'))
     return render_template('admin_graph.html')
 
-# ========== Admin Graph Data API ==========
 @app.route('/admin_graph/data', methods=['POST'])
 def admin_graph_data():
     if 'is_admin' not in session or not session['is_admin']:
@@ -1495,7 +1380,6 @@ def admin_graph_data():
     from_date_str = from_date.strftime("%Y-%m-%d")
     to_date_str = to_date.strftime("%Y-%m-%d")
 
-    # --- 1. Users Growth Over Time ---
     user_growth = {}
     users = db.users.find()
 
@@ -1525,7 +1409,6 @@ def admin_graph_data():
         }]
     }
 
-    # --- 2. Centers Growth Over Time ---
     center_growth = {}
     centers = db.recyclingCenters.find()
 
@@ -1555,7 +1438,6 @@ def admin_graph_data():
         }]
     }
 
-    # --- 3. Items Uploaded ---
     items_uploaded = {}
     items = db.connected_items.find({"status": "Approved"})
 
@@ -1577,7 +1459,6 @@ def admin_graph_data():
         }]
     }
 
-    # --- 4. Transactions (Redeemed vs Remaining) ---
     total_redeemed = 0
     redeemed_tx = db.transactions.find({
         "transactionType": "Redeem",
