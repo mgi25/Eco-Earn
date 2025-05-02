@@ -1,9 +1,9 @@
 let videoStream = null;
-let capturedPhotos = []; // array of compressed base64 strings
+let capturedPhotos = []; // array of base64 strings
 
 function startCamera() {
   const video = document.getElementById('cameraPreview');
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+  if (!navigator.mediaDevices?.getUserMedia) {
     alert("Camera not supported by this browser/device.");
     return;
   }
@@ -46,8 +46,7 @@ function handleFileSelect(event) {
   Array.from(files).forEach(file => {
     const reader = new FileReader();
     reader.onload = async e => {
-      const originalDataURL = e.target.result;
-      const resized = await resizeImage(originalDataURL);
+      const resized = await resizeImage(e.target.result);
       capturedPhotos.push(resized);
       renderThumbnails();
     };
@@ -123,9 +122,44 @@ window.addEventListener('DOMContentLoaded', () => {
   if (fileInput) fileInput.addEventListener('change', handleFileSelect);
 
   if (uploadForm) {
-    uploadForm.addEventListener('submit', () => {
-      const hiddenInput = document.getElementById('photosBase64');
-      hiddenInput.value = JSON.stringify(capturedPhotos);
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('fileInput');
+      const files = fileInput.files;
+
+      // If file is selected, allow normal upload
+      if (files.length > 0) {
+        uploadForm.submit();
+        return;
+      }
+
+      // Else, use captured base64 photo
+      if (capturedPhotos.length === 0) {
+        alert("Please capture or select an image first.");
+        return;
+      }
+
+      const base64 = capturedPhotos[0];
+      const blob = await fetch(base64).then(res => res.blob());
+      const formData = new FormData();
+      formData.append('captured_image', blob, 'captured.jpg');
+
+      fetch('/scan_item', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => {
+        if (res.redirected) {
+          window.location.href = res.url;
+        } else {
+          alert("Upload failed.");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Upload error.");
+      });
     });
   }
 });

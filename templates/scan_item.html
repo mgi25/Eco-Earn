@@ -32,11 +32,12 @@
       <!-- Camera Capture -->
       <div class="camera-section card">
         <h2 class="card-title">Live Camera</h2>
-        <video id="cameraPreview" autoplay playsinline></video>
+        <video id="cameraPreview" autoplay playsinline width="320" height="240" style="background: #000;"></video>
         <div class="camera-controls">
           <button class="btn" id="selectCameraBtn">Open Camera</button>
           <button class="btn" id="takePictureBtn">Capture</button>
         </div>
+        <div id="thumbnailsContainer" class="thumbnails-container"></div>
       </div>
 
       <!-- Upload Images -->
@@ -45,7 +46,7 @@
         <form id="uploadForm" method="POST" enctype="multipart/form-data">
           <div class="input-group">
             <label for="fileInput">Select Images:</label>
-            <input type="file" name="image" id="fileInput" accept="image/*" required>
+            <input type="file" name="image" id="fileInput" accept="image/*">
           </div>
           <button type="submit" class="btn btn-upload">Upload & Predict</button>
         </form>

@@ -170,8 +170,9 @@ def scan_item():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        uploaded_file = request.files.get('image')
-        if not uploaded_file:
+        # Accept both file input or camera capture
+        uploaded_file = request.files.get('image') or request.files.get('captured_image')
+        if not uploaded_file or uploaded_file.filename == '':
             flash("No file uploaded.", "error")
             return redirect(url_for('scan_item'))
 
@@ -211,8 +212,9 @@ def scan_item():
         except Exception as e:
             flash(f"AI prediction failed: {e}", "error")
             return redirect(url_for('scan_item'))
+
         fields = extract_fields(prediction)
-        print("🔍 Extracted:", fields) 
+        print("🔍 Extracted:", fields)
 
         recyclable = (
             is_recyclable_item(fields['material_type']) and
@@ -220,6 +222,8 @@ def scan_item():
             not reason_suggests_non_recyclable(fields['reason']) and
             not prediction_has_conflict(prediction)
         )
+
+        # Store session result
         session['last_prediction'] = prediction
         session['recyclable'] = recyclable
         session['material_type'] = fields['material_type']
@@ -240,10 +244,9 @@ def scan_item():
                 "timestamp": time.strftime("%Y-%m-%d")
             }
             inserted = db.items.insert_one(item_data)
-            item_id = str(inserted.inserted_id)
-
-            session['connect_item_id'] = item_id
+            session['connect_item_id'] = str(inserted.inserted_id)
             flash("✅ Item is recyclable!")
+
         return redirect(url_for('scan_item'))
 
     return render_template('scan_item.html')
@@ -1203,6 +1206,8 @@ def update_connection_status(req_id):
             {"_id": ObjectId(user_id)},
             {"$inc": {"rewards": estimated_value}}
         )
+        
+        # 
         db.users.update_one(
             {"_id": ObjectId(user_id)},
             {"$inc": {"items_recycled": 1}}
@@ -1232,8 +1237,11 @@ def leaderboard():
     if 'user_id' not in session:
         flash("Please log in first.")
         return redirect(url_for('login'))
+
+    # Sort users by rewards descending
     top_users = list(db.users.find().sort("rewards", -1))
 
+    # Get current user
     current_user_doc = db.users.find_one({"_id": ObjectId(session['user_id'])})
 
     if not current_user_doc:
@@ -1244,6 +1252,7 @@ def leaderboard():
     current_user_rewards = current_user_doc.get('rewards', 0)
     current_user_items = current_user_doc.get('items_recycled', 0)
 
+    # Find current user's rank
     user_rank = None
     for idx, user in enumerate(top_users):
         if user['name'] == current_user_name:
@@ -1269,9 +1278,11 @@ def user_dashboard_data():
 
     user_id = session['user_id']
 
+    # --- REWARDS CUMULATIVE CALCULATION (Items + Withdrawals) ---
     cumulative_rewards = {}
     running_total = 0
 
+    # Fetch all item rewards
     item_cursor = db.connected_items.find({
         "userId": user_id,
         "status": "Approved",
@@ -1283,6 +1294,7 @@ def user_dashboard_data():
         value = float(item.get('estimated_value', 0))
         cumulative_rewards[date] = cumulative_rewards.get(date, 0) + value
 
+    # Fetch all withdrawals
     withdrawal_cursor = db.transactions.find({
         "userId": user_id,
         "transactionDate": {"$gte": from_date.strftime("%Y-%m-%d"), "$lte": to_date.strftime("%Y-%m-%d")}
@@ -1293,6 +1305,7 @@ def user_dashboard_data():
         value = float(withdrawal.get('redeemAmount', 0))
         cumulative_rewards[date] = cumulative_rewards.get(date, 0) - value
 
+    # Sort by date for cumulative summation
     sorted_dates = sorted(cumulative_rewards.keys())
     cumulative_sum = []
     total = 0
@@ -1312,6 +1325,7 @@ def user_dashboard_data():
         }]
     }
 
+    # --- ITEMS Data ---
     items_data = {}
     items_cursor = db.connected_items.find({
         "userId": user_id,
@@ -1333,6 +1347,7 @@ def user_dashboard_data():
         }]
     }
 
+    # --- MATERIALS Data ---
     materials_count = {}
     materials_cursor = db.connected_items.find({
         "userId": user_id,
@@ -1361,6 +1376,7 @@ def user_dashboard_data():
         "materials": materials
     })
 
+# ========== Admin Graph Page ==========
 @app.route('/admin_graph')
 def admin_graph():
     if 'is_admin' not in session or not session['is_admin']:
@@ -1368,6 +1384,7 @@ def admin_graph():
         return redirect(url_for('login'))
     return render_template('admin_graph.html')
 
+# ========== Admin Graph Data API ==========
 @app.route('/admin_graph/data', methods=['POST'])
 def admin_graph_data():
     if 'is_admin' not in session or not session['is_admin']:
@@ -1380,6 +1397,7 @@ def admin_graph_data():
     from_date_str = from_date.strftime("%Y-%m-%d")
     to_date_str = to_date.strftime("%Y-%m-%d")
 
+    # --- 1. Users Growth Over Time ---
     user_growth = {}
     users = db.users.find()
 
@@ -1409,6 +1427,7 @@ def admin_graph_data():
         }]
     }
 
+    # --- 2. Centers Growth Over Time ---
     center_growth = {}
     centers = db.recyclingCenters.find()
 
@@ -1438,6 +1457,7 @@ def admin_graph_data():
         }]
     }
 
+    # --- 3. Items Uploaded ---
     items_uploaded = {}
     items = db.connected_items.find({"status": "Approved"})
 
@@ -1459,6 +1479,7 @@ def admin_graph_data():
         }]
     }
 
+    # --- 4. Transactions (Redeemed vs Remaining) ---
     total_redeemed = 0
     redeemed_tx = db.transactions.find({
         "transactionType": "Redeem",
