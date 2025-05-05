@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <title>Scan & Upload Item | EcoEarn</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">
+  <style>
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 18px;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    #loadingOverlay img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 <body>
   <!-- NAVIGATION -->
@@ -53,17 +75,18 @@
       </div>
     </div>
 
+    <!-- AI Prediction Result -->
     {% if session.get('last_prediction') %}
     <div class="ai-result-box">
-      <h3>♻️ AI Evaluation Result</h3>
+      <h3>♻️ Evaluation Result</h3>
       <p><strong>Type:</strong> {{ session.get('material_type', 'Unknown') }}</p>
       <p><strong>Estimated Value:</strong> ₹{{ session.get('estimated_value', '0') }}</p>
       <p>
         <strong>Status:</strong>
         {% if session.get('recyclable') %}
-          <span style="color: green; font-weight: 600;">♻️ Recyclable</span>
+          <span class="status-recyclable">♻️ Recyclable</span>
         {% else %}
-          <span style="color: red; font-weight: 600;">❌ Not Recyclable</span>
+          <span class="status-not">❌ Not Recyclable</span>
         {% endif %}
       </p>
       {% if session.get('reason') %}
@@ -72,16 +95,27 @@
     </div>
     {% endif %}
 
+    <!-- Connect to Recycling Center -->
     {% if session.get('connect_item_id') %}
-    <div class="connection-box">
+    <div class="connection-box {% if not session.get('recyclable') %}not-recyclable{% endif %}">
       <h3>🌍 Connect to Nearby Recycling Center</h3>
-      <p>This item is recyclable. Find centers near your location and send a request.</p>
+      {% if session.get('recyclable') %}
+        <p>This item is recyclable. Find centers near your location and send a request.</p>
+      {% else %}
+        <p>This item is <strong>likely not recyclable</strong>, but you can still connect with a center for expert review.</p>
+      {% endif %}
       <button onclick="redirectToNearbyCenters('{{ session['connect_item_id'] }}')" class="btn btn-connect">
         Yes, Show Nearby Centers
       </button>
     </div>
     {% endif %}
   </div>
+
+<div id="loadingOverlay">
+  <img src="{{ url_for('static', filename='images/sharpened_loading.gif') }}" alt="Loading..." class="loading-gif">
+  <p>Scanning item with AI... Please wait.</p>
+</div>
+
 
   <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
   <script>
@@ -98,6 +132,15 @@
       } else {
         alert("❌ Geolocation is not supported by your browser.");
       }
+    }
+
+    // Show loading screen on form submit
+    const uploadForm = document.getElementById('uploadForm');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (uploadForm) {
+      uploadForm.addEventListener('submit', () => {
+        loadingOverlay.style.display = 'flex';
+      });
     }
   </script>
 </body>

@@ -443,3 +443,148 @@ html, body {
   cursor: pointer;
   font-weight: bold;
 }
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.85);
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #204e34;
+}
+
+#loadingOverlay {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 20px;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#loadingOverlay .loading-gif {
+  width: 450px;     /* ⬅️ Increased size */
+  height: auto;
+  margin-bottom: 20px;
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.ai-result-box {
+  max-width: 600px;
+  margin: 3rem auto 2rem;
+  padding: 2rem;
+  background: #ffffff;
+  border-left: 6px solid #2a9d8f;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.ai-result-box h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #204e34;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-result-box p {
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.ai-result-box span {
+  font-weight: bold;
+}
+
+.ai-result-box .status-recyclable {
+  color: #2a9d8f;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.ai-result-box .status-not {
+  color: #b00020;
+  font-weight: bold;
+  display: inline-block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.connection-box {
+  max-width: 700px;
+  margin: 2rem auto 4rem;
+  background: #ffffff;
+  padding: 2rem;
+  border-left: 6px solid #2a9d8f;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.5s ease-in-out;
+  text-align: center;
+}
+
+.connection-box h3 {
+  font-size: 1.5rem;
+  color: #204e34;
+  margin-bottom: 1rem;
+}
+
+.connection-box p {
+  font-size: 1.05rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.connection-box .btn-connect {
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  background-color: #2a9d8f;
+  border-radius: 30px;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.connection-box .btn-connect:hover {
+  background-color: #1e6e5c;
+}
+
+.connection-box.not-recyclable {
+  border-left-color: #b00020;
+}
+
+.connection-box.not-recyclable h3 {
+  color: #b00020;
+}

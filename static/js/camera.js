@@ -1,5 +1,5 @@
 let videoStream = null;
-let capturedPhotos = []; // array of base64 strings
+let capturedPhotos = [];
 
 function startCamera() {
   const video = document.getElementById('cameraPreview');
@@ -106,7 +106,7 @@ function resizeImage(base64Str, maxWidth = 800, maxHeight = 800) {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
 
-      resolve(canvas.toDataURL("image/jpeg", 0.8)); // 80% quality JPEG
+      resolve(canvas.toDataURL("image/jpeg", 0.8));
     };
   });
 }
@@ -125,18 +125,20 @@ window.addEventListener('DOMContentLoaded', () => {
     uploadForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const fileInput = document.getElementById('fileInput');
       const files = fileInput.files;
+      const overlay = document.getElementById('loadingOverlay');
+      overlay.style.display = 'flex';
 
-      // If file is selected, allow normal upload
+      // If file was chosen
       if (files.length > 0) {
         uploadForm.submit();
         return;
       }
 
-      // Else, use captured base64 photo
+      // If captured image available
       if (capturedPhotos.length === 0) {
         alert("Please capture or select an image first.");
+        overlay.style.display = 'none';
         return;
       }
 
@@ -154,29 +156,14 @@ window.addEventListener('DOMContentLoaded', () => {
           window.location.href = res.url;
         } else {
           alert("Upload failed.");
+          overlay.style.display = 'none';
         }
       })
       .catch(err => {
         console.error(err);
-        alert("Upload error.");
+        alert("Upload error: " + err.message);
+        overlay.style.display = 'none';
       });
     });
   }
 });
-
-function connectToNearest(itemId) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        window.location.href = `/request_connection/${itemId}?lat=${lat}&lon=${lon}`;
-      },
-      function (error) {
-        alert("⚠️ Failed to access location: " + error.message);
-      }
-    );
-  } else {
-    alert("Geolocation not supported by your browser.");
-  }
-}
