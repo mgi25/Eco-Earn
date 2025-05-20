@@ -4,7 +4,6 @@
 
 > A full‑stack Flask + MongoDB web platform that lets users scan recyclable items, locate nearby recycling centers, and collect reward points while administrators manage centers, announcements, and platform data.
 
-[![MIT License](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)  ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)  ![Flask](https://img.shields.io/badge/Flask-2.x-lightgrey)
 
 ---
 
