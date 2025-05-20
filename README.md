@@ -35,15 +35,14 @@
 ---
 
 ## Screenshots
-> Add PNG/JPGs (≤1 MB) to `docs/screenshots/` and the previews will render automatically.
 
 | Home Page | Center Map | Scan Item |
 |:---:|:---:|:---:|
-| ![Home](static/images/Home.png) | ![Center Map](static/image/Center_map.png) | ![Scan Item](static/images/Scan.png) |
+| ![Home](static/images/Home.png) | ![Center Map](static/images/Center_map.png) | ![Scan Item](static/images/Scan.png) |
 
 | User Dashboard | Signup Page | Leaderboard |
 |:---:|:---:|:---:|
-| ![Dashboard](static/images/Dashboard.png) | ![Chatbot](static/images/Chat Bot.png) | ![Leaderboard](static/images/Leaderboard.png) |
+| ![Dashboard](static/images/Dashboard.png) | ![Chatbot](static/images/Chat-Bot.png) | ![Leaderboard](static/images/Leader-Board.png) |
 
 ---
 ## Tech Stack
