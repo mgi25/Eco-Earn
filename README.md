@@ -42,12 +42,11 @@
 | :--------------------------------: | :-------------------------------------: | :-------------------------------------: |
 | ![Home](static/images/Home.png) | ![Map](static/images/Center_map.png) | ![Scan](static/images/Scan.png) |
 
-|                User Dashboard                |              Logic Flow              |               Signup Page              |                    Leaderboard                   |
+|                User Dashboard                              Signup Page              |                    Leaderboard                   |
 | :------------------------------------------: | :----------------------------------: | :------------------------------------: | :----------------------------------------------: |
 | ![Dashboard](static/images/Dashboard.png) | ![Chat Bot](static/images/Chat Bot.png) | ![LeaderBoard](static/images/Leader-Board.png) |!|
 
 ---
-![alt text](image.png)
 ## Tech Stack
 
 | Layer               | Technology                                                |
