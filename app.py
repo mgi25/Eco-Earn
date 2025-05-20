@@ -19,8 +19,6 @@ import calendar
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"  
-
-
 client = MongoClient(DB_URL)
 db = client['ecoearn']
 app.config['db'] = db
@@ -60,6 +58,7 @@ def signup():
             flash("Email already registered. Please log in.")
             return redirect(url_for('login'))
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        # nosql database for users
         db.users.insert_one({
             "name": name,
             "email": email,
