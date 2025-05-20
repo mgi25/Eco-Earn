@@ -39,11 +39,11 @@
 
 | Home Page | Center Map | Scan Item |
 |:---:|:---:|:---:|
-| ![Home](docs/screenshots/home.png) | ![Center Map](docs/screenshots/center_map.png) | ![Scan Item](docs/screenshots/scan_item.png) |
+| ![Home](static/images/Home.png) | ![Center Map](static/image/Center_map.png) | ![Scan Item](static/images/Scan.png) |
 
 | User Dashboard | Signup Page | Leaderboard |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Signup](docs/screenshots/signup.png) | ![Leaderboard](docs/screenshots/leaderboard.png) |
+| ![Dashboard](static/images/Dashboard.png) | ![Chatbot](static/images/Chat Bot.png) | ![Leaderboard](static/images/Leaderboard.png) |
 
 ---
 ## Tech Stack
